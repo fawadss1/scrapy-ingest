@@ -54,45 +54,15 @@ html_static_path = ['_static']
 
 # Theme options
 html_theme_options = {
-    'canonical_url': '',
-    'analytics_id': '',
     'logo_only': False,
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
-    'style_external_links': True,  # Enable external link styling
-    'vcs_pageview_mode': '',
-    'style_nav_header_background': '#333333',  # Dark header background
-    # Toc options
-    'collapse_navigation': False,  # Keep navigation expanded
+    'style_external_links': True,
+    'collapse_navigation': False,
     'sticky_navigation': True,
-    'navigation_depth': 4,  # Depth of navigation tree
+    'navigation_depth': 4,
     'includehidden': True,
-    'titles_only': False,  # Show full titles in navigation
+    'titles_only': False,
 }
-
-# Add custom CSS for dark theme
-html_static_path = ['_static']
-html_css_files = [
-    'css/custom.css',  # Custom CSS for dark theme
-]
-
-# Ensure _static directory exists
-import os
-os.makedirs('_static', exist_ok=True)
-
-# Create custom.css file for dark theme
-custom_css_path = os.path.join('_static', 'css')
-os.makedirs(custom_css_path, exist_ok=True)
-with open(os.path.join(custom_css_path, 'custom.css'), 'w') as f:
-    f.write("""
-    body {
-        background-color: #121212;
-        color: #ffffff;
-    }
-    a {
-        color: #1e90ff;
-    }
-    """)
 
 # -- Extension configuration -------------------------------------------------
 
