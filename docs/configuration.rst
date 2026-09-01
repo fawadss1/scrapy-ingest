@@ -29,7 +29,7 @@ Only the item pipeline is required. It auto-enables requests, logs, stats, paren
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
 Optional
@@ -66,13 +66,13 @@ Standalone components
 .. code-block:: python
 
    # Items only
-   ITEM_PIPELINES = {'scrapy_item_ingest.pipelines.ItemsPipeline': 300}
+   ITEM_PIPELINES = {'scrapy_ingest.pipelines.ItemsPipeline': 300}
 
    # Requests only
-   ITEM_PIPELINES = {'scrapy_item_ingest.pipelines.RequestsPipeline': 300}
+   ITEM_PIPELINES = {'scrapy_ingest.pipelines.RequestsPipeline': 300}
 
    # Logs only
-   EXTENSIONS = {'scrapy_item_ingest.extensions.LoggingExtension': 500}
+   EXTENSIONS = {'scrapy_ingest.extensions.LoggingExtension': 500}
 
 Tips
 ----

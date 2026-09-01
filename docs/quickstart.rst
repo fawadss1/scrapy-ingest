@@ -8,7 +8,7 @@ Get running in minutes.
 
 .. code-block:: bash
 
-   pip install scrapy-item-ingest
+   pip install scrapy-ingest
 
 2) Enable (settings.py)
 -----------------------
@@ -18,7 +18,7 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # EITHER a single URL

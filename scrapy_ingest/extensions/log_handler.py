@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 _lock = threading.Lock()
 _early: logging.Handler | None = None
 _buf: list = []
-_skip = ("urllib3.", "requests.", "scrapy_item_ingest.", "psycopg2.")
+_skip = ("urllib3.", "requests.", "scrapy_ingest.", "psycopg2.")
 _stdout_wrap = None
 
 

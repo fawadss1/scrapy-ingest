@@ -1,5 +1,5 @@
 """
-Database schema management utilities for scrapy_item_ingest.
+Database schema management utilities for scrapy_ingest.
 """
 import logging
 

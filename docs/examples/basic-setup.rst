@@ -152,7 +152,7 @@ Next Steps
 * :doc:`troubleshooting` - Common issues and solutions
 ===================
 
-This section provides complete, working examples for common Scrapy Item Ingest setups. Each example includes the complete spider code, settings configuration, and expected database output.
+This section provides complete, working examples for common Scrapy Ingest setups. Each example includes the complete spider code, settings configuration, and expected database output.
 
 Simple E-commerce Scraper
 -------------------------
@@ -289,12 +289,12 @@ Settings Configuration
 
    # Pipeline configuration
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Extension configuration
    EXTENSIONS = {
-       'scrapy_item_ingest.extensions.LoggingExtension': 500,
+       'scrapy_ingest.extensions.LoggingExtension': 500,
    }
 
    # Scrapy performance settings
@@ -319,7 +319,7 @@ Requirements File
 
    # requirements.txt
    scrapy>=2.5.0
-   scrapy-item-ingest
+   scrapy-ingest
    python-dotenv
    psycopg2-binary
 
@@ -501,10 +501,10 @@ Settings for News Scraper
    # Pipelines
    ITEM_PIPELINES = {
        'news_scraper.pipelines.ArticleValidationPipeline': 200,
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    EXTENSIONS = {
-       'scrapy_item_ingest.extensions.LoggingExtension': 500,
+       'scrapy_ingest.extensions.LoggingExtension': 500,
    }
 

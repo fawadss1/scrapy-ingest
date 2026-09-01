@@ -1,7 +1,7 @@
 Advanced Configurations
 ======================
 
-This section covers complex configuration scenarios and advanced usage patterns for Scrapy Item Ingest in enterprise and high-performance environments.
+This section covers complex configuration scenarios and advanced usage patterns for Scrapy Ingest in enterprise and high-performance environments.
 
 Multi-Environment Setup
 -----------------------
@@ -33,13 +33,13 @@ A complete multi-environment setup with proper configuration management:
        # Pipeline configuration
        ITEM_PIPELINES = {
            'enterprise_scraper.pipelines.ValidationPipeline': 200,
-           'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+           'scrapy_ingest.pipelines.DbInsertPipeline': 300,
            'enterprise_scraper.pipelines.NotificationPipeline': 400,
        }
 
        # Extensions
        EXTENSIONS = {
-           'scrapy_item_ingest.extensions.LoggingExtension': 500,
+           'scrapy_ingest.extensions.LoggingExtension': 500,
            'enterprise_scraper.extensions.MetricsExtension': 510,
        }
 

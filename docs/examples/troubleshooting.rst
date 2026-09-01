@@ -1,7 +1,7 @@
 Troubleshooting
 ===============
 
-This guide covers common issues, error messages, and solutions when using Scrapy Item Ingest in development and production environments.
+This guide covers common issues, error messages, and solutions when using Scrapy Ingest in development and production environments.
 
 Common Installation Issues
 --------------------------
@@ -279,7 +279,7 @@ Pipeline Order Issues
       # Correct order (lower numbers run first)
       ITEM_PIPELINES = {
           'myproject.pipelines.ValidationPipeline': 200,
-          'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+          'scrapy_ingest.pipelines.DbInsertPipeline': 300,
           'myproject.pipelines.NotificationPipeline': 400,
       }
 
@@ -449,7 +449,7 @@ Enable Debug Logging
               },
           },
           'loggers': {
-              'scrapy_item_ingest': {
+              'scrapy_ingest': {
                   'handlers': ['file'],
                   'level': 'DEBUG',
                   'propagate': True,
@@ -562,13 +562,13 @@ Performance Profiling
 Common Error Messages and Solutions
 ----------------------------------
 
-``ImportError: No module named 'scrapy_item_ingest'``
+``ImportError: No module named 'scrapy_ingest'``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Solution:**
 .. code-block:: bash
 
-   pip install scrapy-item-ingest
+   pip install scrapy-ingest
    # Or if developing:
    pip install -e .
 

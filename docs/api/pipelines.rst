@@ -3,7 +3,7 @@ Pipelines API Reference
 
 Minimal, auto-generated API docs for pipelines. See README/Quickstart for usage.
 
-.. currentmodule:: scrapy_item_ingest
+.. currentmodule:: scrapy_ingest
 
 Main pipelines
 --------------
@@ -32,7 +32,7 @@ RequestsPipeline
 Base class
 ----------
 
-.. autoclass:: scrapy_item_ingest.pipelines.base.BasePipeline
+.. autoclass:: scrapy_ingest.pipelines.base.BasePipeline
    :members:
    :show-inheritance:
 

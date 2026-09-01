@@ -1,7 +1,7 @@
 Contributing
 ============
 
-Thank you for your interest in contributing to Scrapy Item Ingest! This guide will help you get started with contributing to the project.
+Thank you for your interest in contributing to Scrapy Ingest! This guide will help you get started with contributing to the project.
 
 Getting Started
 ---------------
@@ -14,7 +14,7 @@ Development Setup
    .. code-block:: bash
 
       git clone https://github.com/fawadss1/scrapy_item_ingest.git
-      cd scrapy_item_ingest
+      cd scrapy_ingest
 
 2. **Create a virtual environment:**
 
@@ -82,7 +82,7 @@ Understanding the Codebase
 
 .. code-block:: text
 
-   scrapy_item_ingest/
+   scrapy_ingest/
    ├── __init__.py              # Package initialization and exports
    ├── config/                  # Configuration management
    │   ├── __init__.py
@@ -250,7 +250,7 @@ Writing Tests
 
    import pytest
    from unittest.mock import Mock, patch
-   from scrapy_item_ingest.pipelines.items import ItemsPipeline
+   from scrapy_ingest.pipelines.items import ItemsPipeline
 
 
    class TestItemsPipeline:
@@ -297,7 +297,7 @@ Writing Tests
 
    import pytest
    import psycopg2
-   from scrapy_item_ingest.pipelines.main import DbInsertPipeline
+   from scrapy_ingest.pipelines.main import DbInsertPipeline
 
 
    @pytest.mark.integration
@@ -346,7 +346,7 @@ Running Tests
    pytest tests/unit/test_pipelines.py
 
    # Run with coverage
-   pytest --cov=scrapy_item_ingest --cov-report=html
+   pytest --cov=scrapy_ingest --cov-report=html
 
    # Run only integration tests
    pytest -m integration
@@ -361,7 +361,7 @@ We aim for 90%+ test coverage. Check coverage with:
 
 .. code-block:: bash
 
-   pytest --cov=scrapy_item_ingest --cov-report=term-missing
+   pytest --cov=scrapy_ingest --cov-report=term-missing
 
 Contribution Workflow
 --------------------
@@ -388,9 +388,9 @@ Making Changes
       pytest
 
       # Run linting
-      flake8 scrapy_item_ingest/
-      black --check scrapy_item_ingest/
-      mypy scrapy_item_ingest/
+      flake8 scrapy_ingest/
+      black --check scrapy_ingest/
+      mypy scrapy_ingest/
 
 4. **Commit your changes:**
 
@@ -552,4 +552,4 @@ Contributors are recognized in:
 - Release notes
 - Project documentation
 
-Thank you for contributing to Scrapy Item Ingest! 🎉
+Thank you for contributing to Scrapy Ingest! 🎉

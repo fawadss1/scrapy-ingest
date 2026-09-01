@@ -1,12 +1,14 @@
 Changelog
 =========
 
-All notable changes to Scrapy Item Ingest will be documented in this file.
+All notable changes to Scrapy Ingest will be documented in this file.
 
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
-[0.2.8] - 2026-09-01
+[1.0.0] - 2026-09-01
 --------------------
+
+First stable release of ``scrapy-ingest``.
 
 ### Added
 - Shared batch collector for items, requests, logs, and stats (flush on batch size, every 10s, and engine stop)
@@ -22,10 +24,11 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 - Child tables store ``jobs.id`` (integer) in ``job_id``, with ``ON DELETE CASCADE``
 
 ### Changed
+- Package renamed to ``scrapy-ingest`` (import ``scrapy_ingest``). ``pip install scrapy-ingest``
 - Request fingerprint is SHA1 of method + canonical URL (used for parent_url lookup)
 - ``LoggingExtension`` follows Scrapy ``LOG_LEVEL`` and writes structured log rows (index, time, logger, exception)
 - Items are buffered and batch-inserted instead of one commit per item
-- Recommended enable path is now ``scrapy_item_ingest.pipelines.DbInsertPipeline`` (the short ``scrapy_item_ingest.DbInsertPipeline`` alias still works)
+- Recommended enable path is now ``scrapy_ingest.pipelines.DbInsertPipeline`` (the short ``scrapy_ingest.DbInsertPipeline`` alias still works)
 - ``parent_id`` is now set from ``parent_url`` after each request flush
 
 [Unreleased]
@@ -51,14 +54,14 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 --------------------
 
 ### Fixed
-- Update getting error logs and insertions logic [scrapy_item_ingest.pipelines.items]
+- Update getting error logs and insertions logic [scrapy_ingest.pipelines.items]
 
 
 [0.2.3] - 2025-11-21
 --------------------
 
 ### Fixed
-- Removed extra loging from [scrapy_item_ingest.pipelines.items]
+- Removed extra loging from [scrapy_ingest.pipelines.items]
 
 
 [0.2.2] - 2025-11-21
@@ -219,11 +222,11 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 
    # Basic setup
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.DbInsertPipeline': 300,
+       'scrapy_ingest.DbInsertPipeline': 300,
    }
 
    EXTENSIONS = {
-       'scrapy_item_ingest.LoggingExtension': 500,
+       'scrapy_ingest.LoggingExtension': 500,
    }
 
 **Key Features:**

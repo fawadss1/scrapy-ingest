@@ -9,7 +9,7 @@ Track requests with parent_url, response time, and download errors.
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.RequestsPipeline': 300,
+       'scrapy_ingest.pipelines.RequestsPipeline': 300,
    }
 
    # Database

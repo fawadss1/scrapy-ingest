@@ -6,19 +6,19 @@ Minimal, auto-generated docs for utility modules.
 Serialization
 -------------
 
-.. automodule:: scrapy_item_ingest.utils.serialization
+.. automodule:: scrapy_ingest.utils.serialization
    :members:
 
 Fingerprint
 -----------
 
-.. automodule:: scrapy_item_ingest.utils.fingerprint
+.. automodule:: scrapy_ingest.utils.fingerprint
    :members:
 
 Time helpers
 ------------
 
-.. automodule:: scrapy_item_ingest.utils.time
+.. automodule:: scrapy_ingest.utils.time
    :members:
 
 Notes
@@ -99,7 +99,7 @@ Custom Serialization Classes
 Request Fingerprinting
 ---------------------
 
-.. automodule:: scrapy_item_ingest.utils.fingerprint
+.. automodule:: scrapy_ingest.utils.fingerprint
    :members:
    :undoc-members:
 
@@ -129,7 +129,7 @@ Fingerprint Functions
    .. code-block:: python
 
       import scrapy
-      from scrapy_item_ingest.utils.fingerprint import request_fingerprint
+      from scrapy_ingest.utils.fingerprint import request_fingerprint
 
       request1 = scrapy.Request('https://example.com/page?a=1&b=2')
       request2 = scrapy.Request('https://example.com/page?b=2&a=1')
@@ -167,7 +167,7 @@ Fingerprint Functions
 Database Utilities
 -----------------
 
-.. automodule:: scrapy_item_ingest.utils.database
+.. automodule:: scrapy_ingest.utils.database
    :members:
    :undoc-members:
 
@@ -187,7 +187,7 @@ Connection Utilities
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.database import test_connection
+      from scrapy_ingest.utils.database import test_connection
 
       result = test_connection('postgresql://user:pass@localhost:5432/db')
       # Result: {'connected': True, 'version': '15.3', 'latency': 0.023}
@@ -227,7 +227,7 @@ Query Builders
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.database import QueryBuilder
+      from scrapy_ingest.utils.database import QueryBuilder
 
       builder = QueryBuilder('job_items')
       query = (builder
@@ -248,7 +248,7 @@ Query Builders
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.database import BatchInserter
+      from scrapy_ingest.utils.database import BatchInserter
 
       inserter = BatchInserter(connection, 'job_items', batch_size=1000)
 
@@ -264,7 +264,7 @@ Query Builders
 Data Processing
 --------------
 
-.. automodule:: scrapy_item_ingest.utils.processing
+.. automodule:: scrapy_ingest.utils.processing
    :members:
    :undoc-members:
 
@@ -338,7 +338,7 @@ Data Validation
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.processing import DataValidator
+      from scrapy_ingest.utils.processing import DataValidator
 
       validator = DataValidator()
 
@@ -359,7 +359,7 @@ Data Validation
 Caching Utilities
 ----------------
 
-.. automodule:: scrapy_item_ingest.utils.cache
+.. automodule:: scrapy_ingest.utils.cache
    :members:
    :undoc-members:
 
@@ -376,7 +376,7 @@ Redis Cache
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.cache import RedisCache
+      from scrapy_ingest.utils.cache import RedisCache
 
       cache = RedisCache('redis://localhost:6379/0')
 
@@ -403,7 +403,7 @@ Memory Cache
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.cache import MemoryCache
+      from scrapy_ingest.utils.cache import MemoryCache
 
       cache = MemoryCache(max_size=1000)
       cache.set('key', 'value', ttl=300)
@@ -412,7 +412,7 @@ Memory Cache
 Monitoring Utilities
 -------------------
 
-.. automodule:: scrapy_item_ingest.utils.monitoring
+.. automodule:: scrapy_ingest.utils.monitoring
    :members:
    :undoc-members:
 
@@ -429,7 +429,7 @@ Performance Monitoring
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.monitoring import PerformanceMonitor
+      from scrapy_ingest.utils.monitoring import PerformanceMonitor
 
       monitor = PerformanceMonitor()
 
@@ -467,7 +467,7 @@ Health Checks
 Configuration Helpers
 ---------------------
 
-.. automodule:: scrapy_item_ingest.utils.config
+.. automodule:: scrapy_ingest.utils.config
    :members:
    :undoc-members:
 
@@ -507,7 +507,7 @@ Environment Utilities
 Testing Utilities
 ----------------
 
-.. automodule:: scrapy_item_ingest.utils.testing
+.. automodule:: scrapy_ingest.utils.testing
    :members:
    :undoc-members:
 
@@ -549,7 +549,7 @@ Database Testing
 
    .. code-block:: python
 
-      from scrapy_item_ingest.utils.testing import TestDatabaseManager
+      from scrapy_ingest.utils.testing import TestDatabaseManager
 
       # In test setup
       db_manager = TestDatabaseManager()

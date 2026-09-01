@@ -1,4 +1,4 @@
-"""Extension modules for scrapy_item_ingest."""
+"""Extension modules for scrapy_ingest."""
 
 from .logging import LoggingExtension
 from .request_logger import RequestLogger

@@ -3,7 +3,7 @@ Extensions API Reference
 
 Minimal, auto-generated API docs for extensions.
 
-.. currentmodule:: scrapy_item_ingest
+.. currentmodule:: scrapy_ingest
 
 LoggingExtension
 ----------------
@@ -43,7 +43,7 @@ Base Extension Class
 BaseExtension
 ~~~~~~~~~~~~
 
-.. autoclass:: scrapy_item_ingest.extensions.base.BaseExtension
+.. autoclass:: scrapy_ingest.extensions.base.BaseExtension
    :members:
    :undoc-members:
    :show-inheritance:
@@ -98,7 +98,7 @@ You can create custom extensions by inheriting from ``BaseExtension``:
 
 .. code-block:: python
 
-   from scrapy_item_ingest.extensions.base import BaseExtension
+   from scrapy_ingest.extensions.base import BaseExtension
    from scrapy import signals
    import time
 
@@ -337,7 +337,7 @@ Unit Testing
 
    import unittest
    from unittest.mock import Mock, patch
-   from scrapy_item_ingest.extensions.logging import LoggingExtension
+   from scrapy_ingest.extensions.logging import LoggingExtension
 
    class TestLoggingExtension(unittest.TestCase):
        def setUp(self):
@@ -373,13 +373,13 @@ Integration Testing
 .. code-block:: python
 
    from scrapy.utils.test import get_crawler
-   from scrapy_item_ingest.extensions.logging import LoggingExtension
+   from scrapy_ingest.extensions.logging import LoggingExtension
 
    def test_extension_integration():
        # Create test crawler
        crawler = get_crawler(spidercls=None, settings_dict={
            'EXTENSIONS': {
-               'scrapy_item_ingest.extensions.LoggingExtension': 500,
+               'scrapy_ingest.extensions.LoggingExtension': 500,
            },
            'DB_URL': 'postgresql://test:test@localhost/test_db'
        })

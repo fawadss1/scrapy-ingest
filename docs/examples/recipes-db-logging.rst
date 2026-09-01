@@ -11,7 +11,7 @@ Logs are included automatically when you use ``DbInsertPipeline``. For logs only
 .. code-block:: python
 
    EXTENSIONS = {
-       'scrapy_item_ingest.extensions.LoggingExtension': 500,
+       'scrapy_ingest.extensions.LoggingExtension': 500,
    }
 
    # Follows Scrapy LOG_LEVEL (default INFO)

@@ -19,10 +19,10 @@ autodoc_mock_imports = [
     'twisted',
 ]
 
-project = 'Scrapy Item Ingest'
+project = 'Scrapy Ingest'
 copyright = '2025, Fawad Ali'
 author = 'Fawad Ali'
-release = '0.2.2'
+release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

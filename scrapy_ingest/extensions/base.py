@@ -1,9 +1,9 @@
 """
-Base extension functionality for scrapy_item_ingest.
+Base extension functionality for scrapy_ingest.
 """
 import logging
 
-from scrapy_item_ingest.config.settings import Settings, validate_settings
+from scrapy_ingest.config.settings import Settings, validate_settings
 from ..utils.time import get_current_datetime
 from ..database.connection import DatabaseConnection
 from ..database.schema import SchemaManager

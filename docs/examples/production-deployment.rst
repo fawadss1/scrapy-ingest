@@ -1,7 +1,7 @@
 Production Deployment
 ===================
 
-This guide covers deploying Scrapy Item Ingest in production environments with proper scaling, monitoring, and reliability patterns.
+This guide covers deploying Scrapy Ingest in production environments with proper scaling, monitoring, and reliability patterns.
 
 Production Architecture Overview
 -------------------------------
@@ -257,7 +257,7 @@ Production Kubernetes Configuration
        spec:
          containers:
          - name: scrapy
-           image: your-registry/scrapy-item-ingest:latest
+           image: your-registry/scrapy-ingest:latest
            envFrom:
            - configMapRef:
                name: scrapy-config
@@ -302,7 +302,7 @@ Production Kubernetes Configuration
            spec:
              containers:
              - name: scrapy
-               image: your-registry/scrapy-item-ingest:latest
+               image: your-registry/scrapy-ingest:latest
                command:
                - python
                - -m
@@ -668,7 +668,7 @@ CI/CD Pipeline
        - name: Run tests
          run: pytest tests/
        - name: Run linting
-         run: flake8 scrapy_item_ingest/
+         run: flake8 scrapy_ingest/
 
      build:
        needs: test
@@ -677,13 +677,13 @@ CI/CD Pipeline
        - uses: actions/checkout@v3
        - name: Build Docker image
          run: |
-           docker build -t scrapy-item-ingest:${{ github.sha }} .
-           docker tag scrapy-item-ingest:${{ github.sha }} scrapy-item-ingest:latest
+           docker build -t scrapy-ingest:${{ github.sha }} .
+           docker tag scrapy-ingest:${{ github.sha }} scrapy-ingest:latest
        - name: Push to registry
          run: |
            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-           docker push scrapy-item-ingest:${{ github.sha }}
-           docker push scrapy-item-ingest:latest
+           docker push scrapy-ingest:${{ github.sha }}
+           docker push scrapy-ingest:latest
 
      deploy:
        needs: build
@@ -691,7 +691,7 @@ CI/CD Pipeline
        steps:
        - name: Deploy to production
          run: |
-           kubectl set image deployment/scrapy-workers scrapy=scrapy-item-ingest:${{ github.sha }}
+           kubectl set image deployment/scrapy-workers scrapy=scrapy-ingest:${{ github.sha }}
            kubectl rollout status deployment/scrapy-workers
 
 Next Steps

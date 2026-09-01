@@ -12,13 +12,13 @@ except FileNotFoundError:
         "requests, logs, and stats into PostgreSQL databases."
     )
 
-PTH = "import scrapy_item_ingest.extensions.log_handler\n"
+PTH = "import scrapy_ingest.extensions.log_handler\n"
 
 
 def _pth(dirpath):
     if dirpath:
         try:
-            Path(dirpath).joinpath("scrapy_item_ingest_early.pth").write_text(
+            Path(dirpath).joinpath("scrapy_ingest_early.pth").write_text(
                 PTH, encoding="utf-8"
             )
         except Exception:
@@ -38,8 +38,8 @@ class InstallCommand(install):
 
 
 setup(
-    name="scrapy_item_ingest",
-    version="0.2.8",
+    name="scrapy-ingest",
+    version="1.0.0",
     description="Scrapy extension for database ingestion with job/spider tracking",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -47,7 +47,7 @@ setup(
     author_email="fawadstar6@gmail.com",
     url="https://github.com/fawadss1/scrapy_item_ingest",
     project_urls={
-        "Documentation": "https://scrapy-item-ingest.readthedocs.io/",
+        "Documentation": "https://scrapy-ingest.readthedocs.io/",
         "Source": "https://github.com/fawadss1/scrapy_item_ingest",
         "Tracker": "https://github.com/fawadss1/scrapy_item_ingest/issues",
     },
@@ -102,11 +102,11 @@ setup(
     cmdclass={"develop": DevelopCommand, "install": InstallCommand},
     entry_points={
         "scrapy.pipelines": [
-            "db_ingest = scrapy_item_ingest.pipelines.main:DbInsertPipeline"
+            "db_ingest = scrapy_ingest.pipelines.main:DbInsertPipeline"
         ],
         "scrapy.extensions": [
-            "logging_ext = scrapy_item_ingest.extensions.logging:LoggingExtension",
-            "stats_ext = scrapy_item_ingest.extensions.stats:StatsExtension",
+            "logging_ext = scrapy_ingest.extensions.logging:LoggingExtension",
+            "stats_ext = scrapy_ingest.extensions.stats:StatsExtension",
         ],
     },
     python_requires=">=3.7",

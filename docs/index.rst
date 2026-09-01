@@ -1,4 +1,4 @@
-Scrapy Item Ingest
+Scrapy Ingest
 ===================
 
 Save your Scrapy items, requests, logs, and stats to PostgreSQL with a minimal setup.
@@ -11,7 +11,7 @@ Quick Start
 
 .. code-block:: bash
 
-   pip install scrapy-item-ingest
+   pip install scrapy-ingest
 
 2) Enable in settings.py
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,7 +21,7 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Pick ONE of the two database config styles:

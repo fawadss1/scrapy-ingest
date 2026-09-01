@@ -1,4 +1,4 @@
-# scrapy_item_ingest/database/connection.py
+# scrapy_ingest/database/connection.py
 
 import logging
 from typing import Optional, Any, Sequence

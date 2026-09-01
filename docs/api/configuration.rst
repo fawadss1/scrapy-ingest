@@ -3,7 +3,7 @@ Configuration API Reference
 
 Minimal, auto-generated docs for configuration.
 
-.. currentmodule:: scrapy_item_ingest.config.settings
+.. currentmodule:: scrapy_ingest.config.settings
 
 Settings
 --------
@@ -109,7 +109,7 @@ Settings Validation
 
    .. code-block:: python
 
-      from scrapy_item_ingest.config import validate_settings
+      from scrapy_ingest.config import validate_settings
 
       def check_configuration(settings):
           errors = validate_settings(settings)
@@ -272,7 +272,7 @@ Basic Configuration
 .. code-block:: python
 
    # settings.py - Basic configuration
-   from scrapy_item_ingest.config import Settings
+   from scrapy_ingest.config import Settings
 
    # Create settings instance
    config = Settings()
@@ -297,7 +297,7 @@ Environment-Based Configuration
 
    # settings.py - Environment-based configuration
    import os
-   from scrapy_item_ingest.config import EnvironmentConfigLoader
+   from scrapy_ingest.config import EnvironmentConfigLoader
 
    # Load from environment
    env_loader = EnvironmentConfigLoader()
@@ -322,7 +322,7 @@ Multi-Environment Configuration
 
    # settings.py - Multi-environment setup
    import os
-   from scrapy_item_ingest.config import Settings, FileConfigLoader
+   from scrapy_ingest.config import Settings, FileConfigLoader
 
    class ConfigurationManager:
        def __init__(self):
@@ -427,7 +427,7 @@ Unit Testing Configuration
 .. code-block:: python
 
    import unittest
-   from scrapy_item_ingest.config import Settings, validate_settings
+   from scrapy_ingest.config import Settings, validate_settings
 
    class TestConfiguration(unittest.TestCase):
        def test_valid_configuration(self):

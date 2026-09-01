@@ -13,7 +13,7 @@ Install from PyPI
 
 .. code-block:: bash
 
-   pip install scrapy-item-ingest
+   pip install scrapy-ingest
 
 Minimal configuration (settings.py)
 ----------------------------------
@@ -21,7 +21,7 @@ Minimal configuration (settings.py)
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Pick ONE of the two database config styles:

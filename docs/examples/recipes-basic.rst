@@ -8,7 +8,7 @@ The fastest way to store items, requests, Scrapy logs, and crawl stats in Postgr
 
 .. code-block:: bash
 
-   pip install scrapy-item-ingest
+   pip install scrapy-ingest
 
 2) Enable (settings.py)
 -----------------------
@@ -18,7 +18,7 @@ Only the item pipeline is required:
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Either one URL

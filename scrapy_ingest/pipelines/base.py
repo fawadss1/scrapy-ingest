@@ -1,5 +1,5 @@
 """
-Base pipeline functionality for scrapy_item_ingest.
+Base pipeline functionality for scrapy_ingest.
 """
 from ..config.settings import Settings, validate_settings
 

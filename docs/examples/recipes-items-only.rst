@@ -9,7 +9,7 @@ Store only items to PostgreSQL (no request tracking, minimal logging).
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.pipelines.ItemsPipeline': 300,
+       'scrapy_ingest.pipelines.ItemsPipeline': 300,
    }
 
    # Database config (pick ONE style)

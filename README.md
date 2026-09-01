@@ -1,11 +1,11 @@
-# Scrapy Item Ingest
+# Scrapy Ingest
 
 A Scrapy addon that saves **items, requests, logs, and stats** to PostgreSQL — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
 
 ## Install
 
 ```bash
-pip install scrapy-item-ingest
+pip install scrapy-ingest
 ```
 
 ## Minimal setup (settings.py)
@@ -14,7 +14,7 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 
 ```python
 ITEM_PIPELINES = {
-    "scrapy_item_ingest.pipelines.DbInsertPipeline": 300,
+    "scrapy_ingest.pipelines.DbInsertPipeline": 300,
 }
 
 # Pick ONE of the two database config styles:
@@ -78,18 +78,18 @@ If you only want part of the collection:
 
 ```python
 # Items only
-ITEM_PIPELINES = {"scrapy_item_ingest.pipelines.ItemsPipeline": 300}
+ITEM_PIPELINES = {"scrapy_ingest.pipelines.ItemsPipeline": 300}
 
 # Requests only (parent_url + errors)
-ITEM_PIPELINES = {"scrapy_item_ingest.pipelines.RequestsPipeline": 300}
+ITEM_PIPELINES = {"scrapy_ingest.pipelines.RequestsPipeline": 300}
 
 # Logs only
-EXTENSIONS = {"scrapy_item_ingest.extensions.LoggingExtension": 500}
+EXTENSIONS = {"scrapy_ingest.extensions.LoggingExtension": 500}
 ```
 
 ## Links
 
-- Docs: https://scrapy-item-ingest.readthedocs.io/
+- Docs: https://scrapy-ingest.readthedocs.io/
 - Changelog: docs/development/changelog.rst
 - Issues: https://github.com/fawadss1/scrapy_item_ingest/issues
 
