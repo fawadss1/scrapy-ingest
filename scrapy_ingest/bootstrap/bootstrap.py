@@ -10,6 +10,7 @@ from ..extensions.logging import LoggingExtension
 from ..extensions.stats import StatsExtension
 from ..extensions.request_logger import RequestLogger
 from ..middleware import ErrorMiddleware, _inject_into_scraper
+from ..utils.updates import update_available
 
 
 def _inject_error_middleware(crawler, engine=None):
@@ -77,6 +78,7 @@ def enable_ingest(crawler):
     crawler._ingest_enabled = True
 
     ensure_collector(crawler)
+    update_available()
 
     LoggingExtension.from_crawler(crawler)
     StatsExtension.from_crawler(crawler)

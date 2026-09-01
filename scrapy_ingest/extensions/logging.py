@@ -7,6 +7,7 @@ from scrapy import signals
 
 from ..collector import ensure_collector
 from ..config.settings import Settings
+from ..utils.updates import update_available
 from .log_handler import IngestLogHandler, capture_prints, drain_early, stop_prints
 
 
@@ -38,6 +39,7 @@ class LoggingExtension:
         if getattr(crawler, "_ingest_logging_ext", None) is not None:
             return crawler._ingest_logging_ext
 
+        update_available()
         name = crawler.settings.get("LOG_LEVEL", "INFO")
         level = logging._nameToLevel.get(str(name).upper(), logging.INFO)
         ext = cls(crawler, level)

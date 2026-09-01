@@ -6,11 +6,12 @@ error logging, full job logs (including print()), and crawl stats.
 """
 
 from .extensions.log_handler import install_early
+from .utils.meta_info import _pkg_meta
 
 install_early()
 
-__version__ = "1.0.0"
-__author__ = "Fawad Ali"
+__version__ = _pkg_meta.version or "1.0.0"
+__author__ = _pkg_meta.author or "Fawad Ali"
 __description__ = "Scrapy extension for database ingestion with job/spider tracking"
 
 from .pipelines.main import DbInsertPipeline

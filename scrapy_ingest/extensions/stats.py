@@ -4,6 +4,7 @@ from scrapy import signals
 
 from ..collector import ensure_collector
 from ..utils.serialization import json_safe
+from ..utils.updates import update_available
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ class StatsExtension:
         if getattr(crawler, "_ingest_stats_ext", None) is not None:
             return crawler._ingest_stats_ext
 
+        update_available()
         ext = cls()
         ext.collector = ensure_collector(crawler)
         crawler.signals.connect(ext.spider_closed, signal=signals.spider_closed)

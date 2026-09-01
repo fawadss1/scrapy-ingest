@@ -7,6 +7,7 @@ from .base import BasePipeline
 from ..collector import ensure_collector
 from ..config.settings import Settings
 from ..database.flusher import get_flusher
+from ..utils.updates import update_available
 
 
 class ItemsPipeline(BasePipeline):
@@ -20,6 +21,7 @@ class ItemsPipeline(BasePipeline):
     @classmethod
     def from_crawler(cls, crawler):
         ensure_collector(crawler)
+        update_available()
         settings = Settings(crawler.settings)
         return cls(settings, crawler)
 

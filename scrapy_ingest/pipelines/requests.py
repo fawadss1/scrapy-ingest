@@ -5,6 +5,7 @@ from ..collector import ensure_collector
 from ..config.settings import Settings
 from ..database.flusher import get_flusher
 from ..extensions.request_logger import RequestLogger
+from ..utils.updates import update_available
 
 
 class RequestsPipeline(BasePipeline):
@@ -21,6 +22,7 @@ class RequestsPipeline(BasePipeline):
     @classmethod
     def from_crawler(cls, crawler):
         ensure_collector(crawler)
+        update_available()
         RequestLogger.from_crawler(crawler)
         attach_runtime_hooks(crawler)
         settings = Settings(crawler.settings)

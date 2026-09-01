@@ -76,6 +76,7 @@ setup(
         "SQLAlchemy>=2.0.41",
         "pytz>=2025.2",
         "w3lib>=1.22.0",
+        "packaging>=21.0",
     ],
     extras_require={
         "docs": [
