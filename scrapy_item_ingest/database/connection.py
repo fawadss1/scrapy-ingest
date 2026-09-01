@@ -2,7 +2,7 @@
 
 import logging
 from typing import Optional, Any, Sequence
-from urllib.parse import urlsplit, urlunsplit, quote, unquote
+from urllib.parse import quote, unquote
 
 import psycopg2
 from psycopg2 import OperationalError
@@ -15,7 +15,7 @@ class DBConnection:
     configuration and exposes `connect/execute/commit/rollback/close` methods.
     """
 
-    _instance = None  # Singleton instance
+    _instance: Optional["DBConnection"] = None  # Singleton instance
     _connection = None
     _db_url: Optional[str] = None
     _logger = logging.getLogger(__name__)
@@ -27,11 +27,6 @@ class DBConnection:
             if db_url:
                 cls._instance._db_url = db_url
             cls._instance._initialize_connection()
-        else:
-            # If an URL is passed later and we don't have one stored yet, keep it
-            if db_url and cls._instance._db_url is None:
-                cls._instance._db_url = db_url
-                # Do not auto-reconnect here; next use will reconnect if needed
         return cls._instance
 
     def _normalize_dsn(self, dsn: str) -> str:
@@ -125,6 +120,11 @@ class DBConnection:
                 return row
             return None
 
+    def executemany(self, sql: str, params_seq):
+        """Execute a SQL statement against a sequence of parameter tuples."""
+        with self.cursor() as cur:
+            cur.executemany(sql, params_seq)
+
     def commit(self):
         if self._connection:
             self._connection.commit()
@@ -132,12 +132,6 @@ class DBConnection:
     def rollback(self):
         if self._connection:
             self._connection.rollback()
-
-    def get_connection(self):
-        """Return the active connection (always the same one)."""
-        if self._connection is None or getattr(self._connection, "closed", 1):
-            self._initialize_connection()
-        return self._connection
 
     def close(self):
         """Close connection gracefully when the spider ends."""

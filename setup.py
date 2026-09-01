@@ -1,15 +1,45 @@
+from pathlib import Path
 from setuptools import setup, find_packages
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
-# Read the README file for long description
+BASE_DIR = Path(__file__).parent
 try:
-    with open("README.md", encoding="utf-8") as fh:
-        long_description = fh.read()
+    long_description = (BASE_DIR / "README.md").read_text(encoding="utf-8")
 except FileNotFoundError:
-    long_description = "A comprehensive Scrapy extension for ingesting scraped items, requests, and logs into PostgreSQL databases."
+    long_description = (
+        "A comprehensive Scrapy extension for ingesting scraped items, "
+        "requests, logs, and stats into PostgreSQL databases."
+    )
+
+PTH = "import scrapy_item_ingest.extensions.log_handler\n"
+
+
+def _pth(dirpath):
+    if dirpath:
+        try:
+            Path(dirpath).joinpath("scrapy_item_ingest_early.pth").write_text(
+                PTH, encoding="utf-8"
+            )
+        except Exception:
+            pass
+
+
+class DevelopCommand(develop):
+    def run(self):
+        develop.run(self)
+        _pth(getattr(self, "install_dir", None) or self.install_lib)
+
+
+class InstallCommand(install):
+    def run(self):
+        install.run(self)
+        _pth(self.install_lib)
+
 
 setup(
     name="scrapy_item_ingest",
-    version="0.2.4",
+    version="0.2.8",
     description="Scrapy extension for database ingestion with job/spider tracking",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -45,6 +75,7 @@ setup(
         "itemadapter>=0.11.0",
         "SQLAlchemy>=2.0.41",
         "pytz>=2025.2",
+        "w3lib>=1.22.0",
     ],
     extras_require={
         "docs": [
@@ -68,12 +99,14 @@ setup(
             "pytest-mock>=3.8.0",
         ],
     },
+    cmdclass={"develop": DevelopCommand, "install": InstallCommand},
     entry_points={
         "scrapy.pipelines": [
             "db_ingest = scrapy_item_ingest.pipelines.main:DbInsertPipeline"
         ],
         "scrapy.extensions": [
-            "logging_ext = scrapy_item_ingest.extensions.logging:LoggingExtension"
+            "logging_ext = scrapy_item_ingest.extensions.logging:LoggingExtension",
+            "stats_ext = scrapy_item_ingest.extensions.stats:StatsExtension",
         ],
     },
     python_requires=">=3.7",

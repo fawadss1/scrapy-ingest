@@ -63,7 +63,7 @@ class BaseExtension:
             identifier_column, identifier_value = self.get_identifier_info(spider)
             sql = f"""
                 INSERT INTO {self.settings.db_logs_table}
-                ({identifier_column}, level, message, timestamp)
+                ({identifier_column}, level, message, time)
                 VALUES (%s, %s, %s, %s)
             """
             self._db.execute(
@@ -72,7 +72,7 @@ class BaseExtension:
                     identifier_value,
                     log_level,
                     message,
-                    get_current_datetime(self.settings),
+                    get_current_datetime(self.settings).strftime("%Y-%m-%d %H:%M:%S"),
                 ),
             )
             self._db.commit()

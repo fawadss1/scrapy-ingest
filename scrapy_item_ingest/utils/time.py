@@ -13,7 +13,7 @@ def get_current_datetime(settings):
     tzname = settings.get_tz()
     try:
         tz = pytz.timezone(tzname)
-    except Exception as e:
+    except Exception:
         raise ValueError(f"invalid timezone '{tzname}'") from None
 
     return tz.localize(datetime.now())

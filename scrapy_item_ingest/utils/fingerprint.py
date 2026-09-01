@@ -1,21 +1,18 @@
-"""
-Request fingerprint utilities for generating unique request identifiers.
-"""
-import logging
+"""Request fingerprint utilities for uniquely identifying requests."""
+import hashlib
 
-from scrapy.utils.request import fingerprint
-
-logger = logging.getLogger(__name__)
+from scrapy.utils.python import to_bytes
+from w3lib.url import canonicalize_url
 
 
 def get_request_fingerprint(request):
-    """Generate a fingerprint for the request"""
+    """
+    SHA1 of method + canonical URL.
 
-    fp = fingerprint(request)
-
-    if isinstance(fp, bytes):
-        fp = fp.hex()
-
-    fp = fp.replace("\\x", "")
-
-    return fp
+    Used to uniquely identify requests and to look up parent_url when
+    request.meta is lost after replace() or middleware.
+    """
+    fp = hashlib.sha1()
+    fp.update(to_bytes(request.method))
+    fp.update(to_bytes(canonicalize_url(request.url)))
+    return fp.hexdigest()

@@ -1,38 +1,39 @@
-"""
-Items pipeline for storing scraped items.
-"""
-import logging
+"""Items pipeline for collecting scraped items."""
+import time
 
 from itemadapter import ItemAdapter
-from scrapy.exceptions import DropItem
 
 from .base import BasePipeline
-from ..utils.serialization import serialize_item_data
-from ..utils.time import get_current_datetime
-
-logger = logging.getLogger(__name__)
+from ..collector import ensure_collector
+from ..config.settings import Settings
+from ..database.flusher import get_flusher
 
 
 class ItemsPipeline(BasePipeline):
-    """Pipeline for handling scraped items"""
+    """Collect items into the shared buffer and flush them to PostgreSQL."""
+
+    def __init__(self, settings, crawler=None):
+        super().__init__(settings)
+        self.crawler = crawler
+        self.collector = ensure_collector(crawler) if crawler is not None else None
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        ensure_collector(crawler)
+        settings = Settings(crawler.settings)
+        return cls(settings, crawler)
+
+    def open_spider(self, spider):
+        self.collector = ensure_collector(self.crawler)
+        get_flusher(self.crawler, self.settings).start(spider)
+
+    def close_spider(self, spider):
+        get_flusher(self.crawler, self.settings).stop_periodic()
 
     def process_item(self, item, spider):
-        """Process and store item in database"""
-        job_id = self.settings.get_identifier_value(spider)
-
-        adapter = ItemAdapter(item)
-        item_dict = adapter.asdict()
-        created_at = get_current_datetime(self.settings)
-
-        # Store everything as JSON in the item column
-        try:
-            sql = f"INSERT INTO {self.settings.db_items_table} (job_id, item, created_at) VALUES (%s, %s, %s)"
-            json_data = serialize_item_data(item_dict)
-
-            self.db.execute(sql, (job_id, json_data, created_at))
-            self.db.commit()
-        except Exception as e:
-            self.db.rollback()
-            raise DropItem(f"DB insert error: {e}")
-
+        data = ItemAdapter(item).asdict()
+        data["crawled_at"] = int(time.time())
+        self.collector.add_item(data)
+        if self.collector.size() >= self.settings.ingest_batch_size:
+            get_flusher(self.crawler, self.settings).flush(spider)
         return item

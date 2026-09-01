@@ -1,48 +1,36 @@
 """
-scrapy_item_ingest - A Scrapy extension for ingesting items and requests into databases.
+scrapy_item_ingest - A Scrapy extension for ingesting items, requests, logs, and stats into PostgreSQL.
 
-This package provides pipelines and extensions for storing scraped data, tracking requests,
-and logging spider events to PostgreSQL databases with support for both spider-based and
-job-based identification.
-
-Main Components:
-- DbInsertPipeline: Combined pipeline for items and requests
-- LoggingExtension: Extension for logging spider events
-- ItemsPipeline: Standalone items processing pipeline
-- RequestsPipeline: Standalone requests tracking pipeline
+Enabling DbInsertPipeline auto-enables request logging (with parent_url),
+error logging, full job logs (including print()), and crawl stats.
 """
 
-__version__ = "0.2.4"
+from .extensions.log_handler import install_early
+
+install_early()
+
+__version__ = "0.2.8"
 __author__ = "Fawad Ali"
 __description__ = "Scrapy extension for database ingestion with job/spider tracking"
 
-# Import main classes directly from organized modules
 from .pipelines.main import DbInsertPipeline
 from .extensions.logging import LoggingExtension
-
-# Import individual components for advanced users
+from .extensions.stats import StatsExtension
 from .pipelines.items import ItemsPipeline
 from .pipelines.requests import RequestsPipeline
-
-# Import configuration utilities
+from .extensions.request_logger import RequestLogger
 from .config.settings import Settings, validate_settings
 
-# Define what gets imported with "from scrapy_item_ingest import *"
 __all__ = [
-    # Main classes (most commonly used)
-    'DbInsertPipeline',
-    'LoggingExtension',
-
-    # Individual components
-    'ItemsPipeline',
-    'RequestsPipeline',
-
-    # Configuration
-    'Settings',
-    'validate_settings',
-
-    # Package metadata
-    '__version__',
-    '__author__',
-    '__description__',
+    "DbInsertPipeline",
+    "LoggingExtension",
+    "StatsExtension",
+    "ItemsPipeline",
+    "RequestsPipeline",
+    "RequestLogger",
+    "Settings",
+    "validate_settings",
+    "__version__",
+    "__author__",
+    "__description__",
 ]
