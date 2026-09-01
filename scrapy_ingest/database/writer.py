@@ -130,6 +130,11 @@ class DbWriter:
                 job_id,
             ),
         )
+        return {
+            **counts,
+            "elapsed_seconds": elapsed,
+            "items_per_min": items_per_min,
+        }
 
     def refresh_job_counts(self, job_id):
         """Update running totals and crawl speed on jobs."""
@@ -140,7 +145,7 @@ class DbWriter:
         finished_at = get_current_datetime(self.settings)
         if stats and not reason:
             reason = stats.get("finish_reason")
-        self._update_job_metrics(
+        metrics = self._update_job_metrics(
             job_id,
             extra_set="status = %s, finished_at = %s, finish_reason = %s, stats = %s,",
             extra_params=(
@@ -152,6 +157,8 @@ class DbWriter:
             end_time=finished_at,
         )
         self.db.commit()
+        metrics["reason"] = reason
+        return metrics
 
     def _write_items(self, items, job_id, created_at):
         if not items:

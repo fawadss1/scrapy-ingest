@@ -100,15 +100,14 @@ class TestUpdateAvailable:
         url = "https://pypi.org/project/scrapy-ingest/9.9.9/"
         with (
             patch(f"{_IMPL}.get_update_url", return_value=url),
-            patch(f"{_IMPL}.print") as mock_print,
+            patch(f"{_IMPL}.info") as mock_info,
         ):
             updates._notify_if_update_available()
 
-        mock_print.assert_called_once()
-        message = mock_print.call_args.args[0]
+        mock_info.assert_called_once()
+        message = mock_info.call_args.args[0]
         assert url in message
         assert "pip install -U scrapy-ingest" in message
-        assert mock_print.call_args.kwargs["file"] is updates.sys.stderr
 
 
 class TestStartupHooks:

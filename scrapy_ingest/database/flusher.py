@@ -6,7 +6,9 @@ from twisted.internet import task
 
 from ..collector import ensure_collector
 from ..config.settings import validate_settings
+from ..utils.console import info
 from ..utils.serialization import json_safe
+from ..utils.summary import display_database, format_crawl_summary
 from .connection import DatabaseConnection
 from .schema import SchemaManager
 from .writer import DbWriter
@@ -37,9 +39,11 @@ class IngestFlusher:
         self.writer = None
         self.job_id = None
         self.job_pk = None
+        self.spider_name = None
         self.periodic_task = None
         self._started = False
         self._done = False
+        self._summary_printed = False
 
     def start(self, spider):
         if self._started:
@@ -56,6 +60,7 @@ class IngestFlusher:
 
         self.writer = DbWriter(self.db, self.settings)
         self.job_id = self.settings.get_identifier_value(spider)
+        self.spider_name = getattr(spider, "name", None)
         self.job_pk = self.writer.start_job(self.job_id, spider)
         logger.info(
             "Ingest job pk=%s job_id=%s spider=%s",
@@ -83,6 +88,7 @@ class IngestFlusher:
         job_pk = self.job_pk
         if job_pk is None and spider is not None:
             self.job_id = self.settings.get_identifier_value(spider)
+            self.spider_name = getattr(spider, "name", None)
             job_pk = self.writer.start_job(self.job_id, spider)
             self.job_pk = job_pk
 
@@ -111,9 +117,33 @@ class IngestFlusher:
             if crawler is not None and getattr(crawler, "stats", None) is not None:
                 stats = json_safe(crawler.stats.get_stats())
             reason = getattr(crawler, "ingest_finish_reason", None) if crawler else None
-            self.writer.finish_job(self.job_pk, reason=reason, stats=stats)
+            metrics = self.writer.finish_job(self.job_pk, reason=reason, stats=stats)
+            self._print_summary(metrics)
         except Exception:
             logger.exception("Failed to finalize jobs row for pk=%s", self.job_pk)
+
+    def _print_summary(self, metrics):
+        if self._summary_printed or not metrics:
+            return
+        self._summary_printed = True
+        spider = self.spider_name
+        if not spider and self.crawler is not None:
+            spider = getattr(getattr(self.crawler, "spider", None), "name", None)
+        settings = self.settings
+        info(
+            format_crawl_summary(
+                {
+                    "job_id": self.job_id,
+                    "spider": spider,
+                    "database": display_database(getattr(settings, "db_url", None)),
+                    "jobs_table": getattr(settings, "db_jobs_table", None),
+                    "items_table": getattr(settings, "db_items_table", None),
+                    "requests_table": getattr(settings, "db_requests_table", None),
+                    "logs_table": getattr(settings, "db_logs_table", None),
+                    **metrics,
+                }
+            )
+        )
 
     def _shutdown(self):
         self.flush()
