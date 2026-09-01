@@ -19,8 +19,9 @@ Utilities
 
 Notes
 -----
-- Configure DB via `DB_URL` or discrete fields (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
-- Default tables: `job_items`, `job_requests`, `job_logs`.
+- Configure DB via `DB_URL` or discrete fields (`DB_TYPE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+- `DB_TYPE` defaults to `postgres` (aliases: `postgresql`).
+- Default tables: `jobs`, `job_items`, `job_requests`, `job_logs`.
 - See `configuration` and `quickstart` for practical examples.
 
       :type: dict

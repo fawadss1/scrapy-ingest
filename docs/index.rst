@@ -1,7 +1,7 @@
 Scrapy Item Ingest
 ===================
 
-Save your Scrapy items, requests, and logs to PostgreSQL with a minimal setup.
+Save your Scrapy items, requests, logs, and stats to PostgreSQL with a minimal setup.
 
 Quick Start
 -----------
@@ -16,14 +16,12 @@ Quick Start
 2) Enable in settings.py
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+Only the item pipeline is required — requests, logs, stats, parent_url, and error logging are enabled automatically:
+
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.DbInsertPipeline': 300,
-   }
-
-   EXTENSIONS = {
-       'scrapy_item_ingest.LoggingExtension': 500,
+       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Pick ONE of the two database config styles:
@@ -37,7 +35,7 @@ Quick Start
 
    # Optional
    CREATE_TABLES = True
-   # JOB_ID = 1  # or omit to use spider name
+   # JOB_ID = 1  # or omit to auto-generate a unique id
 
 3) Run
 ~~~~~~
@@ -51,6 +49,8 @@ Notes
 
 - If your password contains @ or $, URL‑encode them in `DB_URL` (e.g., `PAK@swat1$` -> `PAK%40swat1%24`).
 - Or use the discrete fields above to avoid encoding entirely.
+- Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
+- Logs cover startup → crawl → stats dump → closed (plus ``print()`` spider lines).
 
 Docs
 ----

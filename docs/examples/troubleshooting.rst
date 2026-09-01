@@ -279,7 +279,7 @@ Pipeline Order Issues
       # Correct order (lower numbers run first)
       ITEM_PIPELINES = {
           'myproject.pipelines.ValidationPipeline': 200,
-          'scrapy_item_ingest.DbInsertPipeline': 300,
+          'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
           'myproject.pipelines.NotificationPipeline': 400,
       }
 

@@ -9,7 +9,7 @@ Store only items to PostgreSQL (no request tracking, minimal logging).
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.ItemsPipeline': 300,
+       'scrapy_item_ingest.pipelines.ItemsPipeline': 300,
    }
 
    # Database config (pick ONE style)
@@ -33,8 +33,8 @@ Store only items to PostgreSQL (no request tracking, minimal logging).
 Expected
 --------
 
-- Items saved as JSON rows in ``job_items``.
-- No ``job_requests`` rows are created in this recipe.
+- Items saved as JSON rows in ``job_items`` (each item includes ``crawled_at``).
+- No ``job_requests`` / ``job_logs`` / ``jobs`` rows are created in this recipe.
 
 Tip
 ---

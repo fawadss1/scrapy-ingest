@@ -12,10 +12,18 @@ LoggingExtension
    :members:
    :show-inheritance:
 
+StatsExtension
+--------------
+
+.. autoclass:: StatsExtension
+   :members:
+   :show-inheritance:
+
 Notes
 -----
-- Persists spider and selected Scrapy logs to `job_logs`.
-- Configure inclusion/exclusion via settings: `LOG_DB_LEVEL`, `LOG_DB_CAPTURE_LEVEL`, `LOG_DB_LOGGERS`, `LOG_DB_EXCLUDE_LOGGERS`, `LOG_DB_EXCLUDE_PATTERNS`.
+- `LoggingExtension` persists full job logs (startup → closed, plus ``print()``) to `job_logs`.
+- `StatsExtension` stores Scrapy crawl stats on `jobs.stats` when the spider closes.
+- Both are auto-enabled by `DbInsertPipeline`. Log level follows Scrapy ``LOG_LEVEL``.
 - See `configuration` for settings and Quickstart/Examples for usage.
 
       Called when an item is dropped by a pipeline.
@@ -371,7 +379,7 @@ Integration Testing
        # Create test crawler
        crawler = get_crawler(spidercls=None, settings_dict={
            'EXTENSIONS': {
-               'scrapy_item_ingest.LoggingExtension': 500,
+               'scrapy_item_ingest.extensions.LoggingExtension': 500,
            },
            'DB_URL': 'postgresql://test:test@localhost/test_db'
        })

@@ -33,13 +33,13 @@ A complete multi-environment setup with proper configuration management:
        # Pipeline configuration
        ITEM_PIPELINES = {
            'enterprise_scraper.pipelines.ValidationPipeline': 200,
-           'scrapy_item_ingest.DbInsertPipeline': 300,
+           'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
            'enterprise_scraper.pipelines.NotificationPipeline': 400,
        }
 
        # Extensions
        EXTENSIONS = {
-           'scrapy_item_ingest.LoggingExtension': 500,
+           'scrapy_item_ingest.extensions.LoggingExtension': 500,
            'enterprise_scraper.extensions.MetricsExtension': 510,
        }
 

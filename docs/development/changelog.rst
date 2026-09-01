@@ -5,6 +5,29 @@ All notable changes to Scrapy Item Ingest will be documented in this file.
 
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
+[0.2.8] - 2026-09-01
+--------------------
+
+### Added
+- Shared batch collector for items, requests, logs, and stats (flush on batch size, every 10s, and engine stop)
+- Automatic enable of request logging, error logging, parent_url tracking, job logs, and stats from ``DbInsertPipeline`` alone
+- Crawl-graph ``parent_url`` via scraper hooks and a fingerprint map (start URLs are ``null``)
+- Failed-request capture through injected error middleware (``error`` + ``success`` columns)
+- Full job logs: early/startup buffer, Scrapy/Twisted/warnings, exceptions, and ``print()`` capture
+- Scrapy crawl stats stored on ``jobs.stats`` (no separate ``job_stats`` table)
+- ``INGEST_BATCH_SIZE`` and ``INGEST_FLUSH_INTERVAL`` settings
+- Discrete ``DB_*`` fields now build a connection URL (no ``DB_URL`` required)
+- Auto-generated unique ``job_id`` when ``JOB_ID`` is not set (``spider-YYYYMMDDHHMMSS-xxxxxxxx``)
+- ``jobs`` table with per-crawl status, item/request/error/log counts, crawl speed, finish reason, and stats
+- Child tables store ``jobs.id`` (integer) in ``job_id``, with ``ON DELETE CASCADE``
+
+### Changed
+- Request fingerprint is SHA1 of method + canonical URL (used for parent_url lookup)
+- ``LoggingExtension`` follows Scrapy ``LOG_LEVEL`` and writes structured log rows (index, time, logger, exception)
+- Items are buffered and batch-inserted instead of one commit per item
+- Recommended enable path is now ``scrapy_item_ingest.pipelines.DbInsertPipeline`` (the short ``scrapy_item_ingest.DbInsertPipeline`` alias still works)
+- ``parent_id`` is now set from ``parent_url`` after each request flush
+
 [Unreleased]
 ------------
 
@@ -24,7 +47,7 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 - Input validation improvements to prevent SQL injection
 
 
-[0.2.4] - 2025-11-24
+[0.2.7] - 2025-11-24
 --------------------
 
 ### Fixed

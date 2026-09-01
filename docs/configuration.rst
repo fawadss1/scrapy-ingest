@@ -14,6 +14,7 @@ Required
    DB_URL = 'postgresql://user:password@localhost:5432/database'
 
    # OR discrete fields (no URL encoding needed)
+   # DB_TYPE = 'postgres'
    # DB_HOST = 'localhost'
    # DB_PORT = 5432
    # DB_USER = 'user'
@@ -23,14 +24,12 @@ Required
 Recommended
 -----------
 
+Only the item pipeline is required. It auto-enables requests, logs, stats, parent_url, and error logging.
+
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.DbInsertPipeline': 300,
-   }
-
-   EXTENSIONS = {
-       'scrapy_item_ingest.LoggingExtension': 500,
+       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
    }
 
 Optional
@@ -38,8 +37,12 @@ Optional
 
 .. code-block:: python
 
-   CREATE_TABLES = True   # auto-create job_items, job_requests, job_logs
-   # JOB_ID = 1           # omit to use spider name
+   # DB_TYPE = 'postgres'        # used with discrete DB_* fields
+   CREATE_TABLES = True          # auto-create tables on first run
+   # JOB_ID = 1                  # omit to auto-generate a unique id
+   INGEST_BATCH_SIZE = 50        # flush when this many rows are buffered
+   INGEST_FLUSH_INTERVAL = 10    # periodic flush in seconds
+   # TIMEZONE = 'Asia/Karachi'
 
 Table names (optional)
 ----------------------
@@ -50,26 +53,31 @@ Table names (optional)
    # ITEMS_TABLE = 'job_items'
    # REQUESTS_TABLE = 'job_requests'
    # LOGS_TABLE = 'job_logs'
+   # JOBS_TABLE = 'jobs'
 
-Logging to DB (optional)
-------------------------
+Logging
+-------
+
+Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``job_logs``.
+
+Standalone components
+---------------------
 
 .. code-block:: python
 
-   # Minimum level stored in DB
-   # LOG_DB_LEVEL = 'INFO'  # or 'DEBUG', 'WARNING', ...
+   # Items only
+   ITEM_PIPELINES = {'scrapy_item_ingest.pipelines.ItemsPipeline': 300}
 
-   # Capture level for Scrapy loggers routed to DB (does not change console)
-   # LOG_DB_CAPTURE_LEVEL = 'DEBUG'
+   # Requests only
+   ITEM_PIPELINES = {'scrapy_item_ingest.pipelines.RequestsPipeline': 300}
 
-   # Include/exclude loggers and messages
-   # LOG_DB_LOGGERS = ['scrapy']
-   # LOG_DB_EXCLUDE_LOGGERS = ['scrapy.core.scraper']
-   # LOG_DB_EXCLUDE_PATTERNS = ['Scraped from <']
+   # Logs only
+   EXTENSIONS = {'scrapy_item_ingest.extensions.LoggingExtension': 500}
 
 Tips
 ----
 
 - Password has `@` or `$`? If using `DB_URL`, encode them: `@` -> `%40`, `$` -> `%24`.
 - Prefer discrete fields to avoid URL encoding.
+- Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
 - Set `CREATE_TABLES = True` for the first run, then keep or turn off as you prefer.

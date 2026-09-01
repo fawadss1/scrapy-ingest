@@ -1,7 +1,7 @@
 Recipe: Requests tracking
 =========================
 
-Track scheduled/received requests with parent linkage and response time.
+Track requests with parent_url, response time, and download errors.
 
 1) Enable (settings.py)
 -----------------------
@@ -9,7 +9,7 @@ Track scheduled/received requests with parent linkage and response time.
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.RequestsPipeline': 300,
+       'scrapy_item_ingest.pipelines.RequestsPipeline': 300,
    }
 
    # Database
@@ -27,10 +27,11 @@ Track scheduled/received requests with parent linkage and response time.
 ---------------
 
 - URL, method
-- status_code (when response received)
+- ``parent_url`` / ``parent_id`` — the page that scheduled the request (start URLs are ``null``)
+- status_code
 - response_time (seconds)
 - fingerprint
-- parent_id / parent_url (when known)
+- ``error`` / ``success`` — failed downloads include the exception message
 
 3) Run
 ------
@@ -42,10 +43,10 @@ Track scheduled/received requests with parent linkage and response time.
 Expected
 --------
 
-- Rows in ``job_requests`` with ``parent_id`` filled when parent known.
+- Rows in ``job_requests`` with ``parent_url`` and ``parent_id`` filled when the request was yielded from a response callback.
 - Items table untouched in this recipe (no ItemsPipeline).
 
 Tip
 ---
 
-Start with a small crawl to verify parent linkage before scaling.
+Prefer ``DbInsertPipeline`` if you also want items, logs, and stats. It enables this automatically.

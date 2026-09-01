@@ -38,6 +38,7 @@ Base class
 
 Notes
 -----
-- Tables: `job_items`, `job_requests`, `job_logs` (created when `CREATE_TABLES = True`).
+- Tables: `jobs`, `job_items`, `job_requests`, `job_logs` (created when `CREATE_TABLES = True`).
+- `DbInsertPipeline` auto-enables requests, logs, stats, parent_url, and error logging.
 - Configure DB via `DB_URL` or discrete fields (`DB_HOST`, `DB_USER`, etc.).
-- See `configuration` for all settings and `extensions` for DB logging controls.
+- See `configuration` for all settings.

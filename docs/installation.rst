@@ -21,11 +21,7 @@ Minimal configuration (settings.py)
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.DbInsertPipeline': 300,
-   }
-
-   EXTENSIONS = {
-       'scrapy_item_ingest.LoggingExtension': 500,
+       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # Pick ONE of the two database config styles:
@@ -39,7 +35,7 @@ Minimal configuration (settings.py)
 
    # Optional
    CREATE_TABLES = True
-   # JOB_ID = 1  # or omit to use spider name
+   # JOB_ID = 1  # or omit to auto-generate a unique id
 
 Run
 ---

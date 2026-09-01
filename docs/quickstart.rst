@@ -13,14 +13,12 @@ Get running in minutes.
 2) Enable (settings.py)
 -----------------------
 
+Only the item pipeline is required — requests, logs, stats, parent_url, and error logging turn on automatically:
+
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_item_ingest.DbInsertPipeline': 300,
-   }
-
-   EXTENSIONS = {
-       'scrapy_item_ingest.LoggingExtension': 500,
+       'scrapy_item_ingest.pipelines.DbInsertPipeline': 300,
    }
 
    # EITHER a single URL
@@ -34,7 +32,8 @@ Get running in minutes.
 
    # Optional
    CREATE_TABLES = True
-   # JOB_ID = 1  # or omit to use spider name
+   # JOB_ID = 1  # or omit to auto-generate a unique id
+   # INGEST_BATCH_SIZE = 50
 
 3) Run
 ------
@@ -48,14 +47,16 @@ Get running in minutes.
 
 Data is written into these tables (created automatically when `CREATE_TABLES = True`):
 
-- `job_items`
-- `job_requests`
-- `job_logs`
+- `jobs` — per-crawl summary (counts, crawl speed, finish reason, stats); parent of the other tables
+- `job_items` — JSON items (with ``crawled_at``)
+- `job_requests` — url, parent_url, status, response_time, error, success
+- `job_logs` — structured job logs including ``print()``
 
 5) Troubleshooting
 ------------------
 
 - Password contains `@` or `$`? If using `DB_URL`, encode them (`@` -> `%40`, `$` -> `%24`).
 - Or use discrete fields to avoid encoding.
+- Yield items from callbacks (not only ``return`` inside a generator).
 
 That's it.
