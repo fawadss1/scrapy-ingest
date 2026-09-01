@@ -60,6 +60,11 @@ Logging
 
 Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``job_logs``.
 
+Update checks
+-------------
+
+When a pipeline or extension loads, ``scrapy-ingest`` checks PyPI once per process in a background thread. If a newer version is published, a notice is printed (independent of Scrapy ``LOG_LEVEL``) with ``pip install -U scrapy-ingest`` and a link to that release. Network errors are silent and never interrupt crawling.
+
 Standalone components
 ---------------------
 

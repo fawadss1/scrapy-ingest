@@ -21,6 +21,15 @@ Time helpers
 .. automodule:: scrapy_ingest.utils.time
    :members:
 
+Update checks
+-------------
+
+.. automodule:: scrapy_ingest.utils.updates
+   :members: update_available, get_update_url, latest_pypi_release, pypi_release_url
+
+When a pipeline or extension loads, ``update_available()`` checks PyPI once per
+process in a background thread.
+
 Notes
 -----
 - These helpers are used by pipelines/extensions; they are safe to import in user code.
