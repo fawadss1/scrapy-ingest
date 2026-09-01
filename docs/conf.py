@@ -6,6 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+from datetime import date
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -20,7 +21,7 @@ autodoc_mock_imports = [
 ]
 
 project = 'Scrapy Ingest'
-copyright = '2025, Fawad Ali'
+copyright = f'{date.today().year}, Fawad Ali'
 author = 'Fawad Ali'
 release = '1.0.0'
 
