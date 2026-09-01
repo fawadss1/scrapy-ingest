@@ -73,7 +73,7 @@ When the spider closes, a crawl summary is printed (job, database, tables, items
 - `CREATE_TABLES` (default: `True`) — create tables on startup
 - `ITEMS_TABLE`, `REQUESTS_TABLE`, `LOGS_TABLE`, `JOBS_TABLE` — override table names
 - `TIMEZONE` (default: `Asia/Karachi`) — timezone for `created_at`
-- `JOB_ID` — omit to auto-generate a unique id (`spider-YYYYMMDDHHMMSS-xxxxxxxx`)
+- `JOB_ID` — omit to auto-generate a unique id (`Rs_Spider-178826754-a1b2c3`)
 
 ## Standalone components
 
