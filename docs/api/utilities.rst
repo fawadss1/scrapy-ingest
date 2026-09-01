@@ -38,6 +38,7 @@ Crawl summary
    :members: format_crawl_summary, display_database
 
 Printed automatically when the spider closes, after the ``jobs`` row is finalized.
+Set ``INGEST_SHOW_SUMMARY = False`` to hide the tables.
 
 Update checks
 -------------

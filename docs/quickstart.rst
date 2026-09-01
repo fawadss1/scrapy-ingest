@@ -34,6 +34,7 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
    CREATE_TABLES = True
    # JOB_ID = 1  # or omit to auto-generate a unique id
    # INGEST_BATCH_SIZE = 50
+   # INGEST_SHOW_SUMMARY = True
 
 3) Run
 ------

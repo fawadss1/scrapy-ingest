@@ -54,7 +54,7 @@ Request `parent_url` is the page that scheduled the request (e.g. sitemap → pr
 
 Data flushes on batch size, every 10s, and on engine/process stop.
 
-When the spider closes, a crawl summary is printed (job, database, tables, items, requests, logs, errors, elapsed time) even if `LOG_LEVEL` is `ERROR`.
+When the spider closes, a crawl summary is printed (job, database, tables, items, requests, logs, errors, elapsed time) even if `LOG_LEVEL` is `ERROR`. Set `INGEST_SHOW_SUMMARY = False` to hide it.
 
 ## Troubleshooting
 
@@ -69,6 +69,7 @@ When the spider closes, a crawl summary is printed (job, database, tables, items
 - `DB_TYPE` (default: `postgres`) — used when building a URL from `DB_HOST` / `DB_*` fields
 - `INGEST_BATCH_SIZE` (default: `50`) — flush when this many items+requests+logs are buffered
 - `INGEST_FLUSH_INTERVAL` (default: `10`) — periodic flush in seconds
+- `INGEST_SHOW_SUMMARY` (default: `True`) — print crawl summary tables when the spider closes
 - `CREATE_TABLES` (default: `True`) — create tables on startup
 - `ITEMS_TABLE`, `REQUESTS_TABLE`, `LOGS_TABLE`, `JOBS_TABLE` — override table names
 - `TIMEZONE` (default: `Asia/Karachi`) — timezone for `created_at`

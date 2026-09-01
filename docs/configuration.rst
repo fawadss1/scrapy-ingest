@@ -42,6 +42,7 @@ Optional
    # JOB_ID = 1                  # omit to auto-generate a unique id
    INGEST_BATCH_SIZE = 50        # flush when this many rows are buffered
    INGEST_FLUSH_INTERVAL = 10    # periodic flush in seconds
+   # INGEST_SHOW_SUMMARY = True  # print crawl summary tables when the spider closes
    # TIMEZONE = 'Asia/Karachi'
 
 Table names (optional)
@@ -60,7 +61,7 @@ Logging
 
 Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``job_logs``.
 
-When the spider closes, a crawl summary is printed (independent of ``LOG_LEVEL``) with job id, database, tables, items, requests, logs, errors, and elapsed time.
+When the spider closes, a crawl summary is printed (independent of ``LOG_LEVEL``) with job id, database, tables, items, requests, logs, errors, and elapsed time. Set ``INGEST_SHOW_SUMMARY = False`` to hide it; data is still written to the database.
 
 Update checks
 -------------
