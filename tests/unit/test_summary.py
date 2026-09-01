@@ -73,6 +73,7 @@ class TestPrintSummary:
         settings.db_items_table = "job_items"
         settings.db_requests_table = "job_requests"
         settings.db_logs_table = "job_logs"
+        settings.ingest_show_summary = True
         flusher = IngestFlusher(crawler=MagicMock(), settings=settings)
         flusher.job_id = "job-1"
         flusher.spider_name = "quotes"
@@ -103,6 +104,25 @@ class TestPrintSummary:
         assert "postgresql://localhost:5432/scrapy_data" in text
         assert "job_items" in text
         assert "s3cret" not in text
+
+    def test_skips_when_summary_disabled(self):
+        flusher = self._flusher()
+        flusher.settings.ingest_show_summary = False
+        with patch("scrapy_ingest.database.flusher.info") as mock_info:
+            flusher._print_summary(
+                {
+                    "reason": "finished",
+                    "items_count": 1,
+                    "requests_count": 1,
+                    "success_requests": 1,
+                    "failed_requests": 0,
+                    "logs_count": 0,
+                    "errors_count": 0,
+                    "elapsed_seconds": 1,
+                    "items_per_min": 60,
+                }
+            )
+        mock_info.assert_not_called()
 
     def test_skips_empty_metrics(self):
         flusher = self._flusher()
