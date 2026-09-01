@@ -54,6 +54,8 @@ Request `parent_url` is the page that scheduled the request (e.g. sitemap → pr
 
 Data flushes on batch size, every 10s, and on engine/process stop.
 
+When the spider closes, a crawl summary is printed (job, database, tables, items, requests, logs, errors, elapsed time) even if `LOG_LEVEL` is `ERROR`.
+
 ## Troubleshooting
 
 - Password has special characters like `@` or `$`?

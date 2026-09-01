@@ -21,6 +21,24 @@ Time helpers
 .. automodule:: scrapy_ingest.utils.time
    :members:
 
+Console
+-------
+
+.. automodule:: scrapy_ingest.utils.console
+   :members: info, format_table
+
+Use ``info()`` for user-facing notices (update check, crawl summary). Output
+goes to stderr so it stays visible at any ``LOG_LEVEL`` and is not stored in
+``job_logs``.
+
+Crawl summary
+-------------
+
+.. automodule:: scrapy_ingest.utils.summary
+   :members: format_crawl_summary, display_database
+
+Printed automatically when the spider closes, after the ``jobs`` row is finalized.
+
 Update checks
 -------------
 

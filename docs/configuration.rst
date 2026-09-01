@@ -60,6 +60,8 @@ Logging
 
 Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``job_logs``.
 
+When the spider closes, a crawl summary is printed (independent of ``LOG_LEVEL``) with job id, database, tables, items, requests, logs, errors, and elapsed time.
+
 Update checks
 -------------
 

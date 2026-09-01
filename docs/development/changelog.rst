@@ -6,6 +6,7 @@ Changelog
 
 ### Added
 - Automatic PyPI update check when a pipeline or extension loads. If a newer ``scrapy-ingest`` is published, a notice is printed (independent of Scrapy ``LOG_LEVEL``) with ``pip install -U scrapy-ingest`` and a release link. Network errors are silent and never interrupt crawling.
+- End-of-crawl summary printed as ASCII tables when the spider closes (job, database, tables, items, requests, logs, errors, elapsed time). Shown even when ``LOG_LEVEL`` is ``ERROR``, and not stored in ``job_logs``. Credentials are stripped from the database URL.
 
 [1.0.0] - 2026-09-01
 --------------------
