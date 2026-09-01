@@ -1,12 +1,12 @@
 """Unique job_id generation when the user does not set JOB_ID."""
+
+import time
 import uuid
-from datetime import datetime, timezone
 
 
 def generate_job_id(spider_name):
-    """Return a unique id like ``cookie_handoff-20260901125800-a1b2c3d4``."""
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-    return f"{spider_name}-{ts}-{uuid.uuid4().hex[:8]}"
+    """Return a unique id like ``Rs_Spider-178826754-a1b2``."""
+    return f"{spider_name}-{int(time.time())}-{uuid.uuid4().hex[:4]}"
 
 
 def cache_job_id(spider, job_id):
