@@ -125,6 +125,8 @@ class IngestFlusher:
     def _print_summary(self, metrics):
         if self._summary_printed or not metrics:
             return
+        if not getattr(self.settings, "ingest_show_summary", True):
+            return
         self._summary_printed = True
         spider = self.spider_name
         if not spider and self.crawler is not None:

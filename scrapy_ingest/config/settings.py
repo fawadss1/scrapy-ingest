@@ -18,6 +18,7 @@ class Settings:
     DEFAULT_TIMEZONE = "Asia/Karachi"
     DEFAULT_BATCH_SIZE = 50
     DEFAULT_FLUSH_INTERVAL = 10.0
+    DEFAULT_SHOW_SUMMARY = True
     _DB_SCHEMES = {
         "postgres": "postgresql",
         "postgresql": "postgresql",
@@ -94,6 +95,13 @@ class Settings:
     def ingest_flush_interval(self):
         return self.crawler_settings.getfloat(
             "INGEST_FLUSH_INTERVAL", self.DEFAULT_FLUSH_INTERVAL
+        )
+
+    @property
+    def ingest_show_summary(self):
+        """Print the end-of-crawl summary table (default: True)."""
+        return self.crawler_settings.getbool(
+            "INGEST_SHOW_SUMMARY", self.DEFAULT_SHOW_SUMMARY
         )
 
     def get_tz(self):
