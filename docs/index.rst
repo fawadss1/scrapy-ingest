@@ -1,7 +1,7 @@
 Scrapy Ingest
 ===================
 
-Save your Scrapy items, requests, logs, and stats to PostgreSQL with a minimal setup.
+Save your Scrapy items, requests, logs, and stats to PostgreSQL or MySQL with a minimal setup.
 
 Quick Start
 -----------
@@ -26,6 +26,7 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 
    # Pick ONE of the two database config styles:
    DB_URL = "postgresql://user:password@localhost:5432/database"
+   # DB_URL = "mysql://user:password@localhost:3306/database"
    # Or discrete fields (no URL encoding needed):
    # DB_HOST = "localhost"
    # DB_PORT = 5432

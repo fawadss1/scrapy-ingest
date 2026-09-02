@@ -1,6 +1,6 @@
 # Scrapy Ingest
 
-A Scrapy addon that saves **items, requests, logs, and stats** to PostgreSQL — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
+A Scrapy addon that saves **items, requests, logs, and stats** to PostgreSQL or MySQL — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
 
 ## Install
 
@@ -17,12 +17,14 @@ ITEM_PIPELINES = {
     "scrapy_ingest.pipelines.DbInsertPipeline": 300,
 }
 
-# Pick ONE of the two database config styles:
+# PostgreSQL
 DB_URL = "postgresql://user:password@localhost:5432/database"
-# Or use discrete fields (avoids URL encoding):
-# DB_TYPE = "postgres"
+# MySQL
+# DB_URL = "mysql://user:password@localhost:3306/database"
+# Or discrete fields (avoids URL encoding):
+# DB_TYPE = "postgres"   # or "mysql"
 # DB_HOST = "localhost"
-# DB_PORT = 5432
+# DB_PORT = 5432         # MySQL: 3306
 # DB_USER = "user"
 # DB_PASSWORD = "password"
 # DB_NAME = "database"
@@ -66,7 +68,7 @@ When the spider closes, a crawl summary is printed (job, database, tables, items
 
 ## Useful settings (optional)
 
-- `DB_TYPE` (default: `postgres`) — used when building a URL from `DB_HOST` / `DB_*` fields
+- `DB_TYPE` (default: `postgres`) — `postgres` / `postgresql` or `mysql` / `mariadb` when building a URL from `DB_*` fields
 - `INGEST_BATCH_SIZE` (default: `50`) — flush when this many items+requests+logs are buffered
 - `INGEST_FLUSH_INTERVAL` (default: `10`) — periodic flush in seconds
 - `INGEST_SHOW_SUMMARY` (default: `True`) — print crawl summary tables when the spider closes

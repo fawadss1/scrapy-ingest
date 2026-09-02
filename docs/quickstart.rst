@@ -23,7 +23,9 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 
    # EITHER a single URL
    DB_URL = 'postgresql://user:password@localhost:5432/database'
+   # DB_URL = 'mysql://user:password@localhost:3306/database'
    # OR discrete fields (no URL encoding needed)
+   # DB_TYPE = 'mysql'
    # DB_HOST = 'localhost'
    # DB_PORT = 5432
    # DB_USER = 'user'

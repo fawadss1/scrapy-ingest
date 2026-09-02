@@ -4,9 +4,9 @@ Installation
 Requirements
 ------------
 
-- Python 3.8+
+- Python 3.10+
 - Scrapy
-- PostgreSQL
+- PostgreSQL or MySQL
 
 Install from PyPI
 -----------------
@@ -26,7 +26,9 @@ Minimal configuration (settings.py)
 
    # Pick ONE of the two database config styles:
    DB_URL = "postgresql://user:password@localhost:5432/database"
+   # DB_URL = "mysql://user:password@localhost:3306/database"
    # Or use discrete fields (no URL encoding needed):
+   # DB_TYPE = "postgres"   # or "mysql"
    # DB_HOST = "localhost"
    # DB_PORT = 5432
    # DB_USER = "user"

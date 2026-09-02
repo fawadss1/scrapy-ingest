@@ -54,7 +54,7 @@ Development Environment
 
 **Required Tools:**
 
-* Python 3.7+
+* Python 3.10+
 * PostgreSQL 12+
 * Git
 * Code editor (VS Code, PyCharm, etc.)

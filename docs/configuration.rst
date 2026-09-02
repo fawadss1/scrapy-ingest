@@ -10,13 +10,14 @@ Required
 
 .. code-block:: python
 
-   # Single URL
+   # Single URL (PostgreSQL or MySQL)
    DB_URL = 'postgresql://user:password@localhost:5432/database'
+   # DB_URL = 'mysql://user:password@localhost:3306/database'
 
    # OR discrete fields (no URL encoding needed)
-   # DB_TYPE = 'postgres'
+   # DB_TYPE = 'postgres'   # or 'mysql'
    # DB_HOST = 'localhost'
-   # DB_PORT = 5432
+   # DB_PORT = 5432         # MySQL: 3306
    # DB_USER = 'user'
    # DB_PASSWORD = 'password'
    # DB_NAME = 'database'
@@ -37,7 +38,7 @@ Optional
 
 .. code-block:: python
 
-   # DB_TYPE = 'postgres'        # used with discrete DB_* fields
+   # DB_TYPE = 'postgres'        # or 'mysql'; used with discrete DB_* fields
    CREATE_TABLES = True          # auto-create tables on first run
    # JOB_ID = 1                  # omit to auto-generate a unique id
    INGEST_BATCH_SIZE = 50        # flush when this many rows are buffered
