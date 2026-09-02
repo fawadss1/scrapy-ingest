@@ -27,7 +27,7 @@ def get_flusher(crawler, settings):
 
 class IngestFlusher:
     """
-    Connects to Postgres, creates tables, and flushes the collector
+    Connects to PostgreSQL or MySQL, creates tables, and flushes the collector
     on batch size, a periodic timer, and engine stop.
     """
 

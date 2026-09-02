@@ -22,10 +22,20 @@ class Settings:
     _DB_SCHEMES = {
         "postgres": "postgresql",
         "postgresql": "postgresql",
+        "mysql": "mysql",
+        "mariadb": "mysql",
     }
     _DB_PORTS = {
         "postgres": 5432,
         "postgresql": 5432,
+        "mysql": 3306,
+        "mariadb": 3306,
+    }
+    _URL_DIALECTS = {
+        "postgres": "postgres",
+        "postgresql": "postgres",
+        "mysql": "mysql",
+        "mariadb": "mysql",
     }
 
     def __init__(self, crawler_settings):
@@ -62,6 +72,18 @@ class Settings:
 
     def _default_port(self):
         return self._DB_PORTS.get(self.db_type, 5432)
+
+    @property
+    def db_dialect(self):
+        """``postgres`` or ``mysql``, from ``DB_URL`` scheme or ``DB_TYPE``."""
+        url = self.crawler_settings.get("DB_URL")
+        if url and "://" in str(url):
+            scheme = str(url).split("://", 1)[0].lower().split("+")[0]
+            if scheme in self._URL_DIALECTS:
+                return self._URL_DIALECTS[scheme]
+        if self.db_type in ("mysql", "mariadb"):
+            return "mysql"
+        return "postgres"
 
     @property
     def db_items_table(self):
@@ -128,7 +150,15 @@ class Settings:
 
 def validate_settings(settings):
     """Validate configuration settings. Accepts DB_URL or discrete DB_* fields."""
-    if settings.db_type not in settings._DB_SCHEMES:
+    url = settings.crawler_settings.get("DB_URL")
+    if url and "://" in str(url):
+        scheme = str(url).split("://", 1)[0].lower().split("+")[0]
+        if scheme not in settings._URL_DIALECTS:
+            supported = ", ".join(sorted(settings._URL_DIALECTS))
+            raise ValueError(
+                f"Unsupported database URL scheme {scheme!r}. Supported: {supported}"
+            )
+    elif settings.db_type not in settings._DB_SCHEMES:
         supported = ", ".join(sorted(settings._DB_SCHEMES))
         raise ValueError(
             f"Unsupported DB_TYPE={settings.db_type!r}. Supported: {supported}"
