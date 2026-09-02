@@ -4,14 +4,24 @@ Changelog
 [Unreleased]
 ------------
 
+[1.1.0] - 2026-09-02
+--------------------
+
 ### Added
-- Automatic PyPI update check when a pipeline or extension loads. If a newer ``scrapy-ingest`` is published, a notice is printed (independent of Scrapy ``LOG_LEVEL``) with ``pip install -U scrapy-ingest`` and a release link. Network errors are silent and never interrupt crawling.
-- End-of-crawl summary printed as ASCII tables when the spider closes (job, database, tables, items, requests, logs, errors, elapsed time). Shown even when ``LOG_LEVEL`` is ``ERROR``, and not stored in ``job_logs``. Credentials are stripped from the database URL. Disable with ``INGEST_SHOW_SUMMARY = False``.
-- MySQL / MariaDB support alongside PostgreSQL (``DB_URL = mysql://...`` or ``DB_TYPE = mysql``). ``PyMySQL`` is installed with the package.
+- Automatic PyPI update check when a pipeline or extension loads. If a newer ``scrapy-ingest`` is published, a notice is printed to stderr (independent of Scrapy ``LOG_LEVEL``) with ``pip install -U scrapy-ingest`` and a release link. Network errors are silent and never interrupt crawling. The notice is not stored in ``job_logs``.
+- End-of-crawl summary printed as ASCII tables when the spider closes: job, spider, finish reason, database (credentials stripped), tables, items, requests, ok/failed, logs, errors, elapsed time, and items/min. Shown even when ``LOG_LEVEL`` is ``ERROR``, and not stored in ``job_logs``. Disable with ``INGEST_SHOW_SUMMARY = False``.
+- MySQL / MariaDB support alongside PostgreSQL (``DB_URL = mysql://...`` / ``mariadb://...``, or ``DB_TYPE = mysql`` / ``mariadb``). ``PyMySQL`` is installed with the package; no extra is required.
+- Shared stderr console helper so update notices and the crawl summary stay visible at any log level and are not captured as job logs.
 
 ### Changed
-- Auto-generated ``job_id`` now uses unix time like item ``crawled_at`` plus a short unique suffix (``Rs_Spider-178826754-a1b2c3``) instead of ``spider-YYYYMMDDHHMMSS-xxxxxxxx``.
-- Minimum dependency versions updated: Scrapy 2.18, psycopg2-binary 2.9.12, itemadapter 0.13.1, SQLAlchemy 2.0.52, pytz 2026.3, w3lib 2.4.1, packaging 26.0, PyMySQL 1.2. Python 3.10+ is required.
+- Auto-generated ``job_id`` now uses unix time plus a 4-character suffix (``Rs_Spider-178826754-a1b2``) instead of ``spider-YYYYMMDDHHMMSS-xxxxxxxx``.
+- Table setup is ``CREATE TABLE IF NOT EXISTS`` only. Legacy ``ALTER TABLE`` / column-migration helpers were removed.
+- Postgres vs MySQL SQL (upserts, types, parent-id linking) lives in the writer, schema, and connection modules.
+- Minimum dependency versions updated: Scrapy 2.18, psycopg2-binary 2.9.12, itemadapter 0.13.1, SQLAlchemy 2.0.52, pytz 2026.3, w3lib 2.4.1, packaging 26.0, PyMySQL 1.2. Python 3.10+ is required (classifiers 3.10–3.14).
+- Sphinx docs copyright year is taken from the current date.
+
+### Fixed
+- MySQL flush no longer fails when linking ``parent_id`` (error 1093: cannot update the same table used in a subquery). Parent rows are resolved with a join instead of a same-table subquery.
 
 [1.0.0] - 2026-09-01
 --------------------

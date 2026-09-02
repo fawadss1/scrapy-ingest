@@ -23,7 +23,7 @@ autodoc_mock_imports = [
 project = 'Scrapy Ingest'
 copyright = f'{date.today().year}, Fawad Ali'
 author = 'Fawad Ali'
-release = '1.0.0'
+release = '1.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
