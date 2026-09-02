@@ -1,5 +1,12 @@
 # Scrapy Ingest
 
+[![PyPI version](https://img.shields.io/pypi/v/scrapy-ingest?color=blue)](https://pypi.org/project/scrapy-ingest/)
+[![Python versions](https://img.shields.io/pypi/pyversions/scrapy-ingest)](https://pypi.org/project/scrapy-ingest/)
+[![Downloads](https://static.pepy.tech/badge/scrapy-ingest)](https://pepy.tech/project/scrapy-ingest)
+[![Documentation](https://readthedocs.org/projects/scrapy-ingest/badge/?version=latest)](https://scrapy-ingest.readthedocs.io/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/fawadss1/scrapy-ingest/blob/master/LICENSE)
+[![Changelog](https://img.shields.io/badge/changelog-releases-informational)](https://github.com/fawadss1/scrapy-ingest/releases)
+
 A Scrapy addon that saves **items, requests, logs, and stats** to PostgreSQL or MySQL — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
 
 ## Install

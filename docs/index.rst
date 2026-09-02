@@ -1,6 +1,27 @@
 Scrapy Ingest
 ===================
 
+|pypi| |pyversions| |downloads| |docs| |license| |changelog|
+
+.. |pypi| image:: https://img.shields.io/pypi/v/scrapy-ingest?color=blue
+   :target: https://pypi.org/project/scrapy-ingest/
+   :alt: PyPI version
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/scrapy-ingest
+   :target: https://pypi.org/project/scrapy-ingest/
+   :alt: Python versions
+.. |downloads| image:: https://static.pepy.tech/badge/scrapy-ingest
+   :target: https://pepy.tech/project/scrapy-ingest
+   :alt: Downloads
+.. |docs| image:: https://readthedocs.org/projects/scrapy-ingest/badge/?version=latest
+   :target: https://scrapy-ingest.readthedocs.io/
+   :alt: Documentation
+.. |license| image:: https://img.shields.io/badge/license-MIT-green
+   :target: https://github.com/fawadss1/scrapy-ingest/blob/master/LICENSE
+   :alt: License: MIT
+.. |changelog| image:: https://img.shields.io/badge/changelog-releases-informational
+   :target: https://github.com/fawadss1/scrapy-ingest/releases
+   :alt: Changelog
+
 Save your Scrapy items, requests, logs, and stats to PostgreSQL or MySQL with a minimal setup.
 
 Quick Start
