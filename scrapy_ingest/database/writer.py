@@ -1,4 +1,4 @@
-"""Flush collector batches into PostgreSQL tables."""
+"""Flush collector batches into PostgreSQL or MySQL tables."""
 from ..utils.serialization import serialize_item_data
 from ..utils.time import get_current_datetime
 
@@ -9,6 +9,9 @@ class DbWriter:
     def __init__(self, db, settings):
         self.db = db
         self.settings = settings
+
+    def _is_mysql(self):
+        return getattr(self.settings, "db_dialect", "postgres") == "mysql"
 
     def write(self, data, job_id):
         try:
@@ -22,11 +25,31 @@ class DbWriter:
             self.db.rollback()
             raise
 
-    def start_job(self, job_key, spider):
-        """Insert or reset the jobs row. Returns the integer id."""
-        started_at = get_current_datetime(self.settings)
-        sql = f"""
-        INSERT INTO {self.settings.db_jobs_table}
+    def _upsert_job_sql(self, table):
+        if self._is_mysql():
+            return f"""
+            INSERT INTO {table}
+            (job_id, spider_name, status, started_at, items_count, requests_count,
+             success_requests, failed_requests, errors_count, logs_count)
+            VALUES (%s, %s, %s, %s, 0, 0, 0, 0, 0, 0)
+            ON DUPLICATE KEY UPDATE
+                spider_name = VALUES(spider_name),
+                status = VALUES(status),
+                started_at = VALUES(started_at),
+                finished_at = NULL,
+                finish_reason = NULL,
+                items_count = 0,
+                requests_count = 0,
+                success_requests = 0,
+                failed_requests = 0,
+                errors_count = 0,
+                logs_count = 0,
+                elapsed_seconds = 0,
+                items_per_min = 0,
+                stats = NULL
+            """
+        return f"""
+        INSERT INTO {table}
         (job_id, spider_name, status, started_at, items_count, requests_count,
          success_requests, failed_requests, errors_count, logs_count)
         VALUES (%s, %s, %s, %s, 0, 0, 0, 0, 0, 0)
@@ -47,7 +70,17 @@ class DbWriter:
             stats = NULL
         RETURNING id
         """
-        row = self.db.execute(sql, (job_key, getattr(spider, "name", None), "running", started_at))
+
+    def start_job(self, job_key, spider):
+        """Insert or reset the jobs row. Returns the integer id."""
+        started_at = get_current_datetime(self.settings)
+        table = self.settings.db_jobs_table
+        params = (job_key, getattr(spider, "name", None), "running", started_at)
+        row = self.db.execute(self._upsert_job_sql(table), params)
+        if self._is_mysql():
+            row = self.db.execute(
+                f"SELECT id FROM {table} WHERE job_id = %s", (job_key,)
+            )
         self.db.commit()
         return int(row[0]) if row else None
 
@@ -197,10 +230,26 @@ class DbWriter:
         self.db.executemany(sql, rows)
         self._link_parent_ids(job_id)
 
-    def _link_parent_ids(self, job_id):
-        """Set parent_id from parent_url → the earlier request with that URL."""
-        table = self.settings.db_requests_table
-        sql = f"""
+    def _link_parent_sql(self, table):
+        """Resolve parent_id from parent_url. MySQL cannot UPDATE the same table it reads."""
+        if self._is_mysql():
+            return f"""
+            UPDATE {table} AS child
+            INNER JOIN (
+                SELECT c.id AS child_id, MIN(p.id) AS parent_pk
+                FROM {table} AS c
+                INNER JOIN {table} AS p
+                  ON p.job_id = c.job_id
+                 AND p.url = c.parent_url
+                 AND p.id <> c.id
+                WHERE c.job_id = %s
+                  AND c.parent_id IS NULL
+                  AND c.parent_url IS NOT NULL
+                GROUP BY c.id
+            ) AS mapped ON child.id = mapped.child_id
+            SET child.parent_id = mapped.parent_pk
+            """
+        return f"""
         UPDATE {table} AS child
         SET parent_id = (
             SELECT parent.id
@@ -215,14 +264,20 @@ class DbWriter:
           AND child.parent_id IS NULL
           AND child.parent_url IS NOT NULL
         """
-        self.db.execute(sql, (job_id,))
+
+    def _link_parent_ids(self, job_id):
+        """Set parent_id from parent_url → the earlier request with that URL."""
+        self.db.execute(
+            self._link_parent_sql(self.settings.db_requests_table), (job_id,)
+        )
 
     def _write_logs(self, logs, job_id):
         if not logs:
             return
+        time_col = "`time`" if self._is_mysql() else "time"
         sql = f"""
         INSERT INTO {self.settings.db_logs_table}
-        (job_id, time, level, logger, message, exception)
+        (job_id, {time_col}, level, logger, message, exception)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
         rows = [
