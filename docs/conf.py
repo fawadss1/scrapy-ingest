@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.abspath('..'))
 autodoc_mock_imports = [
     'scrapy',
     'psycopg2',
-    'SQLAlchemy',
     'itemadapter',
     'twisted',
 ]
@@ -23,7 +22,7 @@ autodoc_mock_imports = [
 project = 'Scrapy Ingest'
 copyright = f'{date.today().year}, Fawad Ali'
 author = 'Fawad Ali'
-release = '1.1.0'
+release = '1.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -100,7 +99,6 @@ autodoc_typehints_description_target = 'documented'
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'scrapy': ('https://docs.scrapy.org/en/latest/', None),
-    'sqlalchemy': ('https://docs.sqlalchemy.org/en/20/', None),
 }
 
 # MyST parser settings

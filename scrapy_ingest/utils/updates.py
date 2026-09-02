@@ -3,14 +3,26 @@
 from __future__ import annotations
 
 import json
+import re
 import threading
 import urllib.request
 from typing import Any
 
-from packaging.version import Version
-
 from .console import info
 from .meta_info import _pkg_meta
+
+_VERSION_RE = re.compile(r"^(\d+(?:\.\d+)*)(.*)$")
+
+
+def _version_key(version: str) -> tuple:
+    """Comparable key for ``1.2.3`` / ``1.2.3a1``. Final releases rank above prereleases."""
+    match = _VERSION_RE.match(version.lstrip("vV"))
+    if not match:
+        return (0,), 0, version
+    parts = tuple(int(part) for part in match.group(1).split("."))
+    suffix = match.group(2)
+    return parts + (0,) * max(0, 8 - len(parts)), 0 if suffix else 1, suffix
+
 
 _lock = threading.Lock()
 _update_check_started = False
@@ -41,10 +53,10 @@ def latest_pypi_release(package: str | None = None) -> dict[str, Any]:
 
 
 def get_update_url(
-    current_version: str | None = None,
-    *,
-    silent_fail: bool = True,
-    package: str | None = None,
+        current_version: str | None = None,
+        *,
+        silent_fail: bool = True,
+        package: str | None = None,
 ) -> str | None:
     """
     Return the PyPI release URL when a newer version exists, otherwise ``None``.
@@ -55,9 +67,8 @@ def get_update_url(
     try:
         pypi_data = latest_pypi_release(package)
         latest_version = str(pypi_data["info"]["version"])
-        latest = Version(latest_version.lstrip("v"))
-        used = Version((current_version or _installed_version()).lstrip("v"))
-        if used >= latest:
+        used = current_version or _installed_version()
+        if _version_key(used) >= _version_key(latest_version):
             return None
         return pypi_release_url(latest_version, package)
     except Exception:

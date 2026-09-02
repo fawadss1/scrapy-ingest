@@ -4,6 +4,13 @@ Changelog
 [Unreleased]
 ------------
 
+[1.1.1] - 2026-09-02
+--------------------
+
+### Changed
+- Dropped unused ``SQLAlchemy`` dependency. Connections stay on ``psycopg2`` and ``PyMySQL``.
+- PyPI update check compares versions without the ``packaging`` dependency.
+
 [1.1.0] - 2026-09-02
 --------------------
 

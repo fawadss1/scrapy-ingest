@@ -39,7 +39,7 @@ class InstallCommand(install):
 
 setup(
     name="scrapy-ingest",
-    version="1.1.0",
+    version="1.1.1",
     description="Scrapy extension for database ingestion with job/spider tracking",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -73,10 +73,8 @@ setup(
         "scrapy>=2.18.0",
         "psycopg2-binary>=2.9.12",
         "itemadapter>=0.13.1",
-        "SQLAlchemy>=2.0.52",
         "pytz>=2026.3",
         "w3lib>=2.4.1",
-        "packaging>=26.0",
         "PyMySQL>=1.2.0",
     ],
     extras_require={
