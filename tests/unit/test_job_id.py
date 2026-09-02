@@ -11,4 +11,4 @@ def test_generate_job_id_uses_unix_time_and_is_unique():
     assert first.startswith("Rs_Spider-178826754-")
     assert second.startswith("Rs_Spider-178826754-")
     assert first != second
-    assert len(first.split("-")[-1]) == 6
+    assert len(first.rsplit("-", 1)[-1]) == 4

@@ -3,12 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from scrapy_ingest.config.settings import Settings, validate_settings
-from scrapy_ingest.database.dialect import (
-    MysqlDialect,
-    PostgresDialect,
-    dialect_from_url,
-    get_dialect,
-)
+from scrapy_ingest.database.writer import DbWriter
 
 
 def _settings(**values):
@@ -24,12 +19,10 @@ class TestDialectDetection:
     def test_postgres_url(self):
         settings = _settings(DB_URL="postgresql://u:p@localhost:5432/db")
         assert settings.db_dialect == "postgres"
-        assert dialect_from_url(settings.db_url) == "postgres"
 
     def test_mysql_url(self):
         settings = _settings(DB_URL="mysql://u:p@localhost:3306/db")
         assert settings.db_dialect == "mysql"
-        assert dialect_from_url(settings.db_url) == "mysql"
 
     def test_mysql_from_db_type(self):
         settings = _settings(DB_TYPE="mysql", DB_HOST="localhost", DB_NAME="db")
@@ -64,27 +57,30 @@ class TestValidateSettings:
             validate_settings(settings)
 
 
-class TestDialectSql:
+class TestWriterSql:
     def test_postgres_upsert_returns_id(self):
-        dialect = PostgresDialect()
-        sql = dialect.upsert_job_sql("jobs")
+        writer = DbWriter(MagicMock(), _settings(DB_URL="postgresql://localhost/db"))
+        sql = writer._upsert_job_sql("jobs")
         assert "ON CONFLICT" in sql
         assert "RETURNING id" in sql
-        assert dialect.upsert_returns_id() is True
+        assert writer._is_mysql() is False
 
     def test_mysql_upsert_uses_duplicate_key(self):
-        dialect = MysqlDialect()
-        sql = dialect.upsert_job_sql("jobs")
+        writer = DbWriter(MagicMock(), _settings(DB_URL="mysql://localhost/db"))
+        sql = writer._upsert_job_sql("jobs")
         assert "ON DUPLICATE KEY UPDATE" in sql
         assert "RETURNING" not in sql
-        assert dialect.upsert_returns_id() is False
-        assert dialect.json_type == "JSON"
-        assert "AUTO_INCREMENT" in dialect.serial_pk
+        assert writer._is_mysql() is True
 
-    def test_get_dialect_from_settings(self):
-        assert isinstance(
-            get_dialect(_settings(DB_URL="mysql://localhost/db")), MysqlDialect
-        )
-        assert isinstance(
-            get_dialect(_settings(DB_URL="postgresql://localhost/db")), PostgresDialect
-        )
+    def test_mysql_link_parent_uses_join(self):
+        writer = DbWriter(MagicMock(), _settings(DB_URL="mysql://localhost/db"))
+        sql = writer._link_parent_sql("job_requests")
+        assert "INNER JOIN" in sql
+        assert "SET child.parent_id" in sql
+        assert "FROM job_requests AS parent" not in sql
+
+    def test_postgres_link_parent_uses_subquery(self):
+        writer = DbWriter(MagicMock(), _settings(DB_URL="postgresql://localhost/db"))
+        sql = writer._link_parent_sql("job_requests")
+        assert "SET parent_id" in sql
+        assert "FROM job_requests AS parent" in sql
