@@ -76,6 +76,7 @@ setup(
         "pytz>=2026.3",
         "w3lib>=2.4.1",
         "PyMySQL>=1.2.0",
+        "opensearch-py>=3.2.0",
     ],
     extras_require={
         "docs": [

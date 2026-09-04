@@ -36,6 +36,7 @@ def format_crawl_summary(summary):
             ("spider", summary.get("spider") or "-"),
             ("reason", summary.get("reason") or "-"),
             ("database", summary.get("database") or "-"),
+            ("search", summary.get("search") or "-"),
         ),
     )
     inserted = format_table(

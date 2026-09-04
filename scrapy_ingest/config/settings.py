@@ -19,6 +19,7 @@ class Settings:
     DEFAULT_BATCH_SIZE = 50
     DEFAULT_FLUSH_INTERVAL = 10.0
     DEFAULT_SHOW_SUMMARY = True
+    DEFAULT_SEARCH_INDEX_PREFIX = "ingest"
     _DB_SCHEMES = {
         "postgres": "postgresql",
         "postgresql": "postgresql",
@@ -126,6 +127,36 @@ class Settings:
             "INGEST_SHOW_SUMMARY", self.DEFAULT_SHOW_SUMMARY
         )
 
+    @property
+    def ingest_to_database(self):
+        return self.crawler_settings.getbool("INGEST_TO_DATABASE", True)
+
+    @property
+    def ingest_to_search(self):
+        return self.crawler_settings.getbool("INGEST_TO_SEARCH", False)
+
+    @property
+    def search_url(self):
+        return self.crawler_settings.get("SEARCH_URL")
+
+    @property
+    def search_user(self):
+        return self.crawler_settings.get("SEARCH_USER")
+
+    @property
+    def search_password(self):
+        return self.crawler_settings.get("SEARCH_PASSWORD")
+
+    @property
+    def search_index_prefix(self):
+        return self.crawler_settings.get(
+            "SEARCH_INDEX_PREFIX", self.DEFAULT_SEARCH_INDEX_PREFIX
+        )
+
+    @property
+    def search_ssl_verify(self):
+        return self.crawler_settings.getbool("SEARCH_SSL_VERIFY", True)
+
     def get_tz(self):
         return self.crawler_settings.get("TIMEZONE", self.DEFAULT_TIMEZONE)
 
@@ -149,23 +180,30 @@ class Settings:
 
 
 def validate_settings(settings):
-    """Validate configuration settings. Accepts DB_URL or discrete DB_* fields."""
-    url = settings.crawler_settings.get("DB_URL")
-    if url and "://" in str(url):
-        scheme = str(url).split("://", 1)[0].lower().split("+")[0]
-        if scheme not in settings._URL_DIALECTS:
-            supported = ", ".join(sorted(settings._URL_DIALECTS))
+    """Validate the configured ingest destinations."""
+    if not settings.ingest_to_database and not settings.ingest_to_search:
+        raise ValueError(
+            "Enable at least one destination: INGEST_TO_DATABASE and/or INGEST_TO_SEARCH"
+        )
+    if settings.ingest_to_database:
+        url = settings.crawler_settings.get("DB_URL")
+        if url and "://" in str(url):
+            scheme = str(url).split("://", 1)[0].lower().split("+")[0]
+            if scheme not in settings._URL_DIALECTS:
+                supported = ", ".join(sorted(settings._URL_DIALECTS))
+                raise ValueError(
+                    f"Unsupported database URL scheme {scheme!r}. Supported: {supported}"
+                )
+        elif settings.db_type not in settings._DB_SCHEMES:
+            supported = ", ".join(sorted(settings._DB_SCHEMES))
             raise ValueError(
-                f"Unsupported database URL scheme {scheme!r}. Supported: {supported}"
+                f"Unsupported DB_TYPE={settings.db_type!r}. Supported: {supported}"
             )
-    elif settings.db_type not in settings._DB_SCHEMES:
-        supported = ", ".join(sorted(settings._DB_SCHEMES))
-        raise ValueError(
-            f"Unsupported DB_TYPE={settings.db_type!r}. Supported: {supported}"
-        )
-    if not settings.db_url:
-        raise ValueError(
-            "Database connection is required: set DB_URL or "
-            "DB_HOST / DB_USER / DB_PASSWORD / DB_NAME"
-        )
+        if not settings.db_url:
+            raise ValueError(
+                "Database connection is required: set DB_URL or "
+                "DB_HOST / DB_USER / DB_PASSWORD / DB_NAME"
+            )
+    if settings.ingest_to_search and not settings.search_url:
+        raise ValueError("SEARCH_URL is required when INGEST_TO_SEARCH is True")
     return True
