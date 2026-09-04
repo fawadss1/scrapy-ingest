@@ -15,7 +15,7 @@ Get running in minutes.
 
 Only the item pipeline is required — requests, logs, stats, ``parent_url``, and error logging turn on automatically.
 
-**Default: database only**
+**Database only**
 
 .. code-block:: python
 
@@ -23,27 +23,26 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
-   INGEST_TO_DATABASE = True
-   INGEST_TO_SEARCH = False
-
    DB_URL = 'postgresql://user:password@localhost:5432/database'
    # DB_URL = 'mysql://user:password@localhost:3306/database'
 
    CREATE_TABLES = True
 
-**Optional: add search**
+**Elasticsearch / OpenSearch only**
 
 .. code-block:: python
 
-   INGEST_TO_SEARCH = True
+   ITEM_PIPELINES = {
+       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+   }
+
    SEARCH_URL = 'http://localhost:9200'
 
-**Optional: search only (no SQL)**
+**Both**
 
 .. code-block:: python
 
-   INGEST_TO_DATABASE = False
-   INGEST_TO_SEARCH = True
+   DB_URL = 'postgresql://user:password@localhost:5432/database'
    SEARCH_URL = 'http://localhost:9200'
 
 3) Run
@@ -63,7 +62,7 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 - ``job_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success
 - ``job_logs`` — structured job logs including ``print()``
 
-**Search** — indexes created on first flush (default prefix ``ingest``):
+**Elasticsearch / OpenSearch** — indexes created on first flush (default prefix ``ingest``):
 
 - ``ingest-jobs``, ``ingest-job_items``, ``ingest-job_requests``, ``ingest-job_logs``
 
@@ -75,6 +74,6 @@ When the spider closes, a crawl summary is printed to stderr with job id, destin
 - Password contains ``@`` or ``$``? If using ``DB_URL``, encode them (``@`` -> ``%40``, ``$`` -> ``%24``).
 - Or use discrete ``DB_*`` fields to avoid encoding.
 - Yield items from callbacks (not only ``return`` inside a generator).
-- Search not connecting? Check ``SEARCH_URL`` and run ``curl http://localhost:9200``.
+- Elasticsearch / OpenSearch not connecting? Check ``SEARCH_URL`` and run ``curl http://localhost:9200``.
 
 That's it. See :doc:`configuration` and :doc:`examples/recipes-search` for full options.

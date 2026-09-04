@@ -3,10 +3,10 @@ Search ingest (Elasticsearch / OpenSearch)
 
 ``scrapy-ingest`` can index crawl data to Elasticsearch or OpenSearch using ``opensearch-py`` (installed with the package). Both engines use the same REST bulk API, so one client covers both.
 
-Enable search
--------------
+Enable Elasticsearch / OpenSearch
+---------------------------------
 
-**Search only** — no SQL database required:
+**Elasticsearch / OpenSearch only** — set ``SEARCH_URL`` (no SQL database required):
 
 .. code-block:: python
 
@@ -14,16 +14,11 @@ Enable search
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
-   INGEST_TO_DATABASE = False
-   INGEST_TO_SEARCH = True
    SEARCH_URL = 'http://localhost:9200'
 
-**Both database and search:**
+**Both database and Elasticsearch / OpenSearch:**
 
 .. code-block:: python
-
-   INGEST_TO_DATABASE = True
-   INGEST_TO_SEARCH = True
 
    DB_URL = 'postgresql://user:password@localhost:5432/database'
    SEARCH_URL = 'http://localhost:9200'

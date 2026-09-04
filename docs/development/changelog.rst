@@ -5,10 +5,11 @@ Changelog
 ------------
 
 ### Added
-- Optional Elasticsearch / OpenSearch indexing via ``INGEST_TO_SEARCH``. Works alongside Postgres/MySQL (``INGEST_TO_DATABASE``, default ``True``) or on its own. Uses ``opensearch-py`` (compatible with Elasticsearch and OpenSearch REST APIs).
+- Optional Elasticsearch / OpenSearch indexing via ``SEARCH_URL``. Works alongside Postgres/MySQL (``DB_URL`` / ``DB_*``) or on its own. Uses ``opensearch-py`` (compatible with Elasticsearch and OpenSearch REST APIs).
 - Typed exception hierarchy (``IngestError``, ``ConfigurationError``, ``IngestConnectionError``, ``DatabaseError``, ``SchemaError``, ``SearchError``, ``DependencyError``, ``FlushError``) exported from ``scrapy_ingest``.
 
 ### Changed
+- Ingest destination is inferred from connection settings: ``DB_URL`` (or ``DB_*``) enables SQL, ``SEARCH_URL`` enables search, both enables dual-write. ``INGEST_TO_DATABASE`` and ``INGEST_TO_SEARCH`` are removed.
 - Request duration is stored as ``response_time_secs`` (was ``response_time``) in ``job_requests`` and search indexes so the unit is explicit.
 
 [1.1.1] - 2026-09-02

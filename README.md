@@ -9,7 +9,7 @@
 
 A Scrapy addon that saves **items, requests, logs, and stats** to **PostgreSQL**, **MySQL**, **Elasticsearch**, or **OpenSearch** — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
 
-You choose where data goes: relational database, search cluster, or **both**.
+You choose where data goes by setting connection URLs — relational database, Elasticsearch/OpenSearch, or **both**.
 
 ## Install
 
@@ -17,7 +17,7 @@ You choose where data goes: relational database, search cluster, or **both**.
 pip install scrapy-ingest
 ```
 
-This installs all runtime dependencies, including `psycopg2-binary`, `PyMySQL`, and `opensearch-py` (used when search ingest is enabled).
+This installs all runtime dependencies, including `psycopg2-binary`, `PyMySQL`, and `opensearch-py`.
 
 ## Minimal setup (settings.py)
 
@@ -27,12 +27,6 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
 ITEM_PIPELINES = {
     "scrapy_ingest.pipelines.DbInsertPipeline": 300,
 }
-
-# Write ingested data to a relational database (Postgres or MySQL).
-INGEST_TO_DATABASE = True
-
-# Write ingested data to a search cluster (Elasticsearch or OpenSearch).
-INGEST_TO_SEARCH = False
 
 DB_URL = "postgresql://user:password@localhost:5432/database"
 ```
@@ -47,33 +41,27 @@ Log level follows Scrapy `LOG_LEVEL`.
 
 ## Choose your destination
 
-Control where crawl data is written with two booleans. **At least one must be enabled.**
+Set **`DB_URL`** (or `DB_*` fields) for Postgres/MySQL, **`SEARCH_URL`** for Elasticsearch/OpenSearch, or both. **At least one must be configured.**
 
-| Mode                        | Settings                                                | You need                   |
-|-----------------------------|---------------------------------------------------------|----------------------------|
-| **Database only** (default) | `INGEST_TO_DATABASE = True`                             | `DB_URL` or `DB_*` fields  |
-| **Search only**             | `INGEST_TO_SEARCH = True`, `INGEST_TO_DATABASE = False` | `SEARCH_URL`               |
-| **Both**                    | both `True`                                             | database + search settings |
+| Mode                                | Settings                | Result                                   |
+|-------------------------------------|-------------------------|------------------------------------------|
+| **Database only**                   | `DB_URL` or `DB_*`      | SQL only                                 |
+| **Elasticsearch / OpenSearch only** | `SEARCH_URL`            | Indexes only                             |
+| **Both**                            | `DB_URL` + `SEARCH_URL` | SQL first, then Elasticsearch/OpenSearch |
 
 ```python
-# Database only (default)
-INGEST_TO_DATABASE = True
-INGEST_TO_SEARCH = False
+# Database only
 DB_URL = "postgresql://user:password@localhost:5432/database"
 
-# Search only
-INGEST_TO_DATABASE = False
-INGEST_TO_SEARCH = True
+# Elasticsearch / OpenSearch only
 SEARCH_URL = "http://localhost:9200"
 
 # Both
-INGEST_TO_DATABASE = True
-INGEST_TO_SEARCH = True
 DB_URL = "postgresql://user:password@localhost:5432/database"
 SEARCH_URL = "http://localhost:9200"
 ```
 
-When both are enabled, SQL is written first, then the search index. A search failure after a successful SQL write is logged but does not roll back database rows.
+When both are configured, SQL is written first, then Elasticsearch/OpenSearch indexes. An indexing failure after a successful SQL write is logged but does not roll back database rows.
 
 ## Database configuration
 
@@ -99,14 +87,13 @@ DB_NAME = "database"
 
 Tables are created automatically when `CREATE_TABLES = True` (default).
 
-## Search configuration
+## Elasticsearch / OpenSearch configuration
 
 Elasticsearch and OpenSearch use the same REST bulk API. The package connects via **`opensearch-py`**, which works with both.
 
 **Minimum:**
 
 ```python
-INGEST_TO_SEARCH = True
 SEARCH_URL = "http://localhost:9200"
 ```
 
@@ -147,30 +134,28 @@ Indexes are created on first write if they do not exist.
 |----------------|---------------------------------------------------------------------------------------------------------|
 | `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats |
 | `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                         |
-| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success |
+| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success                     |
 | `job_logs`     | time, logger, level, message, exception                                                                 |
 
 Request `parent_url` is the page that scheduled the request (e.g. sitemap → product). Start URLs are `null`. The request `fingerprint` is a SHA1 hash of method + canonical URL for parent lookup.
 
-### Search cluster (Elasticsearch / OpenSearch)
+### Elasticsearch / OpenSearch
 
-Same crawl data as JSON documents in the indexes listed above. Documents include the string `job_id` (not the integer SQL primary key). Search mode does not link `parent_id`; `parent_url` is stored on each request document.
+Same crawl data as JSON documents in the indexes listed above. Documents include the string `job_id` (not the integer SQL primary key). Elasticsearch/OpenSearch mode does not link `parent_id`; `parent_url` is stored on each request document.
 
 ## Batch flush and crawl summary
 
 Data flushes on batch size, every 10 seconds, and on engine/process stop.
 
-When the spider closes, a crawl summary is printed to stderr (visible even when `LOG_LEVEL` is `ERROR`) with job id, spider, database URL, search URL, table/index names, counts, and elapsed time. Set `INGEST_SHOW_SUMMARY = False` to hide it.
+When the spider closes, a crawl summary is printed to stderr (visible even when `LOG_LEVEL` is `ERROR`) with job id, spider, database URL, Elasticsearch/OpenSearch URL, table/index names, counts, and elapsed time. Set `INGEST_SHOW_SUMMARY = False` to hide it.
 
 ## Useful settings
 
 | Setting                                                     | Default        | Description                                                 |
 |-------------------------------------------------------------|----------------|-------------------------------------------------------------|
-| `INGEST_TO_DATABASE`                                        | `True`         | Write to Postgres or MySQL                                  |
-| `INGEST_TO_SEARCH`                                          | `False`        | Index to Elasticsearch or OpenSearch                        |
-| `DB_URL` / `DB_*`                                           | —              | Database connection (required when database enabled)        |
-| `SEARCH_URL`                                                | —              | Search cluster URL (required when search enabled)           |
-| `SEARCH_USER` / `SEARCH_PASSWORD`                           | —              | HTTP basic auth for search (optional)                       |
+| `DB_URL` / `DB_*`                                           | —              | Database connection (enables SQL ingest)                    |
+| `SEARCH_URL`                                                | —              | Elasticsearch or OpenSearch URL (enables indexing)          |
+| `SEARCH_USER` / `SEARCH_PASSWORD`                           | —              | HTTP basic auth for Elasticsearch/OpenSearch (optional)     |
 | `SEARCH_INDEX_PREFIX`                                       | `ingest`       | Prefix for index names                                      |
 | `SEARCH_SSL_VERIFY`                                         | `True`         | Verify HTTPS certificates                                   |
 | `CREATE_TABLES`                                             | `True`         | Auto-create SQL tables on startup                           |
@@ -186,7 +171,7 @@ When the spider closes, a crawl summary is printed to stderr (visible even when 
 
 - **Password has `@` or `$` in `DB_URL`?** Encode them: `@` → `%40`, `$` → `%24`. Or use discrete `DB_*` fields.
 - **Yield items** from callbacks (not only `return` inside a generator).
-- **Search connection refused?** Check `SEARCH_URL`, firewall, and that the cluster is running. Test with `curl http://localhost:9200`.
+- **Elasticsearch / OpenSearch connection refused?** Check `SEARCH_URL`, firewall, and that the cluster is running. Test with `curl http://localhost:9200`.
 - **HTTPS / self-signed cert?** Set `SEARCH_SSL_VERIFY = False` in development only.
 
 ## Standalone components

@@ -11,7 +11,7 @@ Requirements
 
 - ``psycopg2-binary`` — PostgreSQL
 - ``PyMySQL`` — MySQL / MariaDB
-- ``opensearch-py`` — Elasticsearch / OpenSearch (when ``INGEST_TO_SEARCH = True``)
+- ``opensearch-py`` — Elasticsearch / OpenSearch
 - ``itemadapter``, ``pytz``, ``w3lib``, ``packaging`` (internal utilities)
 
 Install from PyPI
@@ -24,29 +24,23 @@ Install from PyPI
 Minimal configuration (settings.py)
 ----------------------------------
 
-Database-only (default):
+Database-only:
 
 .. code-block:: python
 
    ITEM_PIPELINES = {
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
-
-   INGEST_TO_DATABASE = True
-   INGEST_TO_SEARCH = False
 
    DB_URL = "postgresql://user:password@localhost:5432/database"
 
-Search-only:
+Elasticsearch / OpenSearch only:
 
 .. code-block:: python
 
    ITEM_PIPELINES = {
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
-
-   INGEST_TO_DATABASE = False
-   INGEST_TO_SEARCH = True
 
    SEARCH_URL = "http://localhost:9200"
 
@@ -63,7 +57,7 @@ Troubleshooting
 - If your password contains special characters (e.g., ``@``, ``$``) and you use ``DB_URL``, URL-encode them.
   - Example: ``PAK@swat1$`` -> ``PAK%40swat1%24``
 - Or use discrete ``DB_*`` fields to avoid URL encoding entirely.
-- For search, test connectivity: ``curl http://localhost:9200``
+- For Elasticsearch/OpenSearch, test connectivity: ``curl http://localhost:9200``
 
 Next steps
 ----------

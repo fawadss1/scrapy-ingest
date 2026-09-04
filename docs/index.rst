@@ -45,15 +45,8 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
-   # Destination (default: database only)
-   INGEST_TO_DATABASE = True
-   INGEST_TO_SEARCH = False
-
-   # Database (when INGEST_TO_DATABASE = True)
    DB_URL = "postgresql://user:password@localhost:5432/database"
    # DB_URL = "mysql://user:password@localhost:3306/database"
-
-   # Search (when INGEST_TO_SEARCH = True)
    # SEARCH_URL = "http://localhost:9200"
 
    CREATE_TABLES = True
@@ -72,7 +65,7 @@ Notes
 - Or use the discrete fields above to avoid encoding entirely.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
 - Logs cover startup → crawl → stats dump → closed (plus ``print()`` spider lines).
-- Enable search with ``INGEST_TO_SEARCH = True`` and ``SEARCH_URL``. See :doc:`examples/recipes-search`.
+- Enable Elasticsearch or OpenSearch by setting ``SEARCH_URL``. See :doc:`examples/recipes-search`.
 
 Docs
 ----
