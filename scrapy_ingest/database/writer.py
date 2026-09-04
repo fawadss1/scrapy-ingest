@@ -1,4 +1,5 @@
 """Flush collector batches into PostgreSQL or MySQL tables."""
+from ..exceptions import DatabaseError
 from ..utils.serialization import serialize_item_data
 from ..utils.time import get_current_datetime
 
@@ -21,9 +22,9 @@ class DbWriter:
             self._write_logs(data.get("logs") or [], job_id)
             self.refresh_job_counts(job_id)
             self.db.commit()
-        except Exception:
+        except Exception as exc:
             self.db.rollback()
-            raise
+            raise DatabaseError("Failed to write ingest batch") from exc
 
     def _upsert_job_sql(self, table):
         if self._is_mysql():

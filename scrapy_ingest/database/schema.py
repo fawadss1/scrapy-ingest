@@ -3,6 +3,8 @@ Database schema management utilities for scrapy_ingest.
 """
 import logging
 
+from ..exceptions import SchemaError
+
 logger = logging.getLogger(__name__)
 
 
@@ -112,4 +114,4 @@ class SchemaManager:
         except Exception as e:
             logger.error("Failed to create tables: %s", e)
             self.db.rollback()
-            raise
+            raise SchemaError(f"Failed to create tables: {e}") from e

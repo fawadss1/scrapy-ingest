@@ -181,8 +181,10 @@ class Settings:
 
 def validate_settings(settings):
     """Validate the configured ingest destinations."""
+    from ..exceptions import ConfigurationError
+
     if not settings.ingest_to_database and not settings.ingest_to_search:
-        raise ValueError(
+        raise ConfigurationError(
             "Enable at least one destination: INGEST_TO_DATABASE and/or INGEST_TO_SEARCH"
         )
     if settings.ingest_to_database:
@@ -191,19 +193,19 @@ def validate_settings(settings):
             scheme = str(url).split("://", 1)[0].lower().split("+")[0]
             if scheme not in settings._URL_DIALECTS:
                 supported = ", ".join(sorted(settings._URL_DIALECTS))
-                raise ValueError(
+                raise ConfigurationError(
                     f"Unsupported database URL scheme {scheme!r}. Supported: {supported}"
                 )
         elif settings.db_type not in settings._DB_SCHEMES:
             supported = ", ".join(sorted(settings._DB_SCHEMES))
-            raise ValueError(
+            raise ConfigurationError(
                 f"Unsupported DB_TYPE={settings.db_type!r}. Supported: {supported}"
             )
         if not settings.db_url:
-            raise ValueError(
+            raise ConfigurationError(
                 "Database connection is required: set DB_URL or "
                 "DB_HOST / DB_USER / DB_PASSWORD / DB_NAME"
             )
     if settings.ingest_to_search and not settings.search_url:
-        raise ValueError("SEARCH_URL is required when INGEST_TO_SEARCH is True")
+        raise ConfigurationError("SEARCH_URL is required when INGEST_TO_SEARCH is True")
     return True

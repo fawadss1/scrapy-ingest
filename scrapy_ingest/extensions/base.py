@@ -4,6 +4,7 @@ Base extension functionality for scrapy_ingest.
 import logging
 
 from scrapy_ingest.config.settings import Settings, validate_settings
+from scrapy_ingest.exceptions import IngestConnectionError
 from ..utils.time import get_current_datetime
 from ..database.connection import DatabaseConnection
 from ..database.schema import SchemaManager
@@ -38,7 +39,7 @@ class BaseExtension:
         if self._db is None:
             self._db = DatabaseConnection(self.settings.db_url)
             if not self._db.connect():
-                raise RuntimeError("Failed to connect to database for logging")
+                raise IngestConnectionError("Failed to connect to database for logging")
         if self._schema_manager is None:
             self._schema_manager = SchemaManager(self._db, self.settings)
 

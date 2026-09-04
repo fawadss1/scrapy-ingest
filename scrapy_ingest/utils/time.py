@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pytz
 
+from ..exceptions import ConfigurationError
+
 
 def get_current_datetime(settings):
     """
@@ -14,6 +16,6 @@ def get_current_datetime(settings):
     try:
         tz = pytz.timezone(tzname)
     except Exception:
-        raise ValueError(f"invalid timezone '{tzname}'") from None
+        raise ConfigurationError(f"invalid timezone '{tzname}'") from None
 
     return tz.localize(datetime.now())

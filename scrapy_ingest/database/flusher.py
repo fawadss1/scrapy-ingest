@@ -6,6 +6,7 @@ from twisted.internet import task
 
 from ..collector import ensure_collector
 from ..config.settings import validate_settings
+from ..exceptions import IngestConnectionError, IngestError
 from .search import SearchClient, SearchWriter
 from ..utils.console import info
 from ..utils.serialization import json_safe
@@ -63,7 +64,7 @@ class IngestFlusher:
         if self._use_db():
             self.db = DatabaseConnection(self.settings.db_url)
             if not self.db.connect():
-                raise Exception("Failed to connect to database")
+                raise IngestConnectionError("Failed to connect to database")
             schema = SchemaManager(self.db, self.settings)
             schema.ensure_tables_exist()
             self.db_writer = DbWriter(self.db, self.settings)
@@ -112,6 +113,9 @@ class IngestFlusher:
                 self.db_writer.write(data, self.job_pk)
             if self.search_writer:
                 self.search_writer.write(data, self.job_id)
+        except IngestError:
+            logger.exception("Failed to flush ingest batch; requeuing data")
+            self.collector.requeue(data)
         except Exception:
             logger.exception("Failed to flush ingest batch; requeuing data")
             self.collector.requeue(data)

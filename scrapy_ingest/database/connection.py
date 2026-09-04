@@ -4,6 +4,8 @@ import logging
 from typing import Optional, Any, Sequence
 from urllib.parse import quote, unquote, urlparse
 
+from ..exceptions import DependencyError, IngestConnectionError
+
 
 class DBConnection:
     """
@@ -74,7 +76,7 @@ class DBConnection:
         try:
             import pymysql
         except ImportError as exc:
-            raise ImportError(
+            raise DependencyError(
                 "MySQL support requires PyMySQL. Reinstall scrapy-ingest to get it."
             ) from exc
         if dsn:
@@ -150,13 +152,25 @@ class DBConnection:
                 source,
                 str(e),
             )
-            raise
+            raise IngestConnectionError(
+                f"Failed to connect to database via {source}: {e}"
+            ) from e
+        except Exception as e:
+            self._logger.error(
+                "Failed to connect to database via %s: %s. "
+                "Verify DB settings or DSN (host, port, user, dbname).",
+                source,
+                str(e),
+            )
+            raise IngestConnectionError(
+                f"Failed to connect to database via {source}: {e}"
+            ) from e
 
     def connect(self) -> bool:
         try:
             self._initialize_connection()
             return True
-        except Exception:
+        except IngestConnectionError:
             return False
 
     def cursor(self):

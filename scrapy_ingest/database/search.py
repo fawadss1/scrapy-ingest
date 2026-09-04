@@ -5,6 +5,7 @@ from datetime import datetime
 from opensearchpy import OpenSearch
 from opensearchpy.helpers import bulk as os_bulk
 
+from ..exceptions import IngestConnectionError
 from ..utils.serialization import json_safe
 from ..utils.time import get_current_datetime
 
@@ -30,7 +31,7 @@ class SearchClient:
 
     def ping(self):
         if not self._client.ping():
-            raise ConnectionError("Search cluster did not respond to ping")
+            raise IngestConnectionError("Search cluster did not respond to ping")
 
     def close(self):
         self._client.close()
