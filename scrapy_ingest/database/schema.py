@@ -67,7 +67,7 @@ class SchemaManager:
             url TEXT,
             method VARCHAR(10),
             status_code INTEGER,
-            response_time FLOAT,
+            response_time_secs FLOAT,
             fingerprint VARCHAR(64),
             parent_id INTEGER,
             parent_url TEXT,

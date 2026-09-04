@@ -109,7 +109,7 @@ class SearchWriter:
                 "url": req.get("url"),
                 "method": req.get("method"),
                 "status_code": req.get("status_code"),
-                "response_time": req.get("response_time"),
+                "response_time_secs": req.get("response_time_secs"),
                 "fingerprint": req.get("fingerprint"),
                 "parent_url": req.get("parent_url"),
                 "error": req.get("error"),

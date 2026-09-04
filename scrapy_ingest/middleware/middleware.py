@@ -153,7 +153,7 @@ class ErrorMiddleware:
 
     def process_exception(self, request, exception, spider):
         start_time = request.meta.get("start_time", time.time())
-        response_time = time.time() - start_time
+        elapsed_seconds = time.time() - start_time
         status_code = self._extract_status_code(exception)
 
         self.collector.add_request(
@@ -162,7 +162,7 @@ class ErrorMiddleware:
                 "parent_url": get_parent_url(request, getattr(self, "crawler", None)),
                 "method": request.method,
                 "status_code": status_code,
-                "response_time": round(response_time, 2),
+                "response_time_secs": round(elapsed_seconds, 2),
                 "fingerprint": get_request_fingerprint(request),
                 "error": f"{exception.__class__.__name__}: {str(exception)}",
                 "success": False,

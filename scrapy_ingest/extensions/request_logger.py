@@ -37,7 +37,7 @@ class RequestLogger:
                 "parent_url": get_parent_url(request, self.crawler),
                 "method": request.method,
                 "status_code": response.status,
-                "response_time": round(time.time() - start, 2),
+                "response_time_secs": round(time.time() - start, 2),
                 "fingerprint": get_request_fingerprint(request),
                 "error": None,
                 "success": 200 <= response.status < 300,
