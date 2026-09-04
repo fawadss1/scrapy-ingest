@@ -41,11 +41,8 @@ class TestExceptionHierarchy:
         assert issubclass(SchemaError, DatabaseError)
 
     def test_configuration_error_from_validate_settings(self):
-        settings = _settings(
-            INGEST_TO_DATABASE=False,
-            INGEST_TO_SEARCH=False,
-        )
-        with pytest.raises(ConfigurationError, match="at least one destination"):
+        settings = _settings()
+        with pytest.raises(ConfigurationError, match="Configure at least one destination"):
             validate_settings(settings)
 
     def test_connection_error_is_not_builtin(self):

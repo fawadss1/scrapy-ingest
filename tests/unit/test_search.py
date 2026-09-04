@@ -18,28 +18,41 @@ def _settings(**values):
 
 
 class TestIngestDestinations:
-    def test_defaults_to_database_only(self):
+    def test_database_only_from_db_url(self):
         settings = _settings(DB_URL="postgresql://localhost/db")
         assert settings.ingest_to_database is True
         assert settings.ingest_to_search is False
-
-    def test_search_only_skips_database_validation(self):
-        settings = _settings(
-            INGEST_TO_DATABASE=False,
-            INGEST_TO_SEARCH=True,
-            SEARCH_URL="http://localhost:9200",
-        )
         assert validate_settings(settings) is True
 
-    def test_search_requires_url(self):
-        settings = _settings(INGEST_TO_DATABASE=False, INGEST_TO_SEARCH=True)
-        with pytest.raises(ConfigurationError, match="SEARCH_URL is required"):
-            validate_settings(settings)
+    def test_search_only_from_search_url(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        assert settings.ingest_to_database is False
+        assert settings.ingest_to_search is True
+        assert validate_settings(settings) is True
+
+    def test_both_when_db_and_search_are_configured(self):
+        settings = _settings(
+            DB_URL="postgresql://localhost/db",
+            SEARCH_URL="http://localhost:9200",
+        )
+        assert settings.ingest_to_database is True
+        assert settings.ingest_to_search is True
+        assert validate_settings(settings) is True
 
     def test_requires_at_least_one_destination(self):
-        settings = _settings(INGEST_TO_DATABASE=False, INGEST_TO_SEARCH=False)
-        with pytest.raises(ConfigurationError, match="at least one destination"):
+        settings = _settings()
+        with pytest.raises(ConfigurationError, match="Configure at least one destination"):
             validate_settings(settings)
+
+    def test_database_from_discrete_fields(self):
+        settings = _settings(
+            DB_HOST="localhost",
+            DB_USER="u",
+            DB_PASSWORD="p",
+            DB_NAME="db",
+        )
+        assert settings.ingest_to_database is True
+        assert validate_settings(settings) is True
 
 
 class TestSearchWriter:

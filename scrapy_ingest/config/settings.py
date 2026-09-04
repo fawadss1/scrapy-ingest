@@ -127,13 +127,18 @@ class Settings:
             "INGEST_SHOW_SUMMARY", self.DEFAULT_SHOW_SUMMARY
         )
 
-    @property
-    def ingest_to_database(self):
-        return self.crawler_settings.getbool("INGEST_TO_DATABASE", True)
+    def _has_db_config(self):
+        if self.crawler_settings.get("DB_URL"):
+            return True
+        return bool(self.crawler_settings.get("DB_HOST"))
 
     @property
     def ingest_to_search(self):
-        return self.crawler_settings.getbool("INGEST_TO_SEARCH", False)
+        return bool(self.search_url)
+
+    @property
+    def ingest_to_database(self):
+        return self._has_db_config()
 
     @property
     def search_url(self):
@@ -185,7 +190,8 @@ def validate_settings(settings):
 
     if not settings.ingest_to_database and not settings.ingest_to_search:
         raise ConfigurationError(
-            "Enable at least one destination: INGEST_TO_DATABASE and/or INGEST_TO_SEARCH"
+            "Configure at least one destination: set DB_URL (or DB_* fields) "
+            "and/or SEARCH_URL"
         )
     if settings.ingest_to_database:
         url = settings.crawler_settings.get("DB_URL")
@@ -203,9 +209,7 @@ def validate_settings(settings):
             )
         if not settings.db_url:
             raise ConfigurationError(
-                "Database connection is required: set DB_URL or "
+                "Database connection is incomplete: set DB_URL or "
                 "DB_HOST / DB_USER / DB_PASSWORD / DB_NAME"
             )
-    if settings.ingest_to_search and not settings.search_url:
-        raise ConfigurationError("SEARCH_URL is required when INGEST_TO_SEARCH is True")
     return True
