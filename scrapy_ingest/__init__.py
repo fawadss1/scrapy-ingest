@@ -10,7 +10,7 @@ from .utils.meta_info import _pkg_meta
 
 install_early()
 
-__version__ = _pkg_meta.version or "1.1.1"
+__version__ = _pkg_meta.version or "1.2.0"
 __author__ = _pkg_meta.author or "Fawad Ali"
 __description__ = "Scrapy extension for database ingestion with job/spider tracking"
 

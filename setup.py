@@ -39,7 +39,7 @@ class InstallCommand(install):
 
 setup(
     name="scrapy-ingest",
-    version="1.1.1",
+    version="1.2.0",
     description="Scrapy extension for database ingestion with job/spider tracking",
     long_description=long_description,
     long_description_content_type="text/markdown",
