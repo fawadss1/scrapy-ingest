@@ -53,6 +53,7 @@ class TestFormatCrawlSummary:
         assert "| spider   | - " in text
         assert "| reason   | - " in text
         assert "| database | - " in text
+        assert "| search   | - " in text
         assert "job_items" in text
         assert "job_requests" in text
 
@@ -74,6 +75,8 @@ class TestPrintSummary:
         settings.db_requests_table = "job_requests"
         settings.db_logs_table = "job_logs"
         settings.ingest_show_summary = True
+        settings.ingest_to_database = True
+        settings.ingest_to_search = False
         flusher = IngestFlusher(crawler=MagicMock(), settings=settings)
         flusher.job_id = "job-1"
         flusher.spider_name = "quotes"
@@ -133,8 +136,8 @@ class TestPrintSummary:
     def test_finalize_prints_after_finish_job(self):
         flusher = self._flusher()
         flusher.job_pk = 7
-        flusher.writer = MagicMock()
-        flusher.writer.finish_job.return_value = {
+        flusher.db_writer = MagicMock()
+        flusher.db_writer.finish_job.return_value = {
             "reason": "finished",
             "items_count": 1,
             "requests_count": 2,
@@ -149,7 +152,7 @@ class TestPrintSummary:
         with patch("scrapy_ingest.database.flusher.info") as mock_info:
             flusher._finalize_job()
 
-        flusher.writer.finish_job.assert_called_once()
+        flusher.db_writer.finish_job.assert_called_once()
         mock_info.assert_called_once()
         text = mock_info.call_args.args[0]
         assert "| Metric   |" in text
