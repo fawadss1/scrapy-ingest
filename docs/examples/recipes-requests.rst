@@ -29,7 +29,7 @@ Track requests with parent_url, response time, and download errors.
 - URL, method
 - ``parent_url`` / ``parent_id`` — the page that scheduled the request (start URLs are ``null``)
 - status_code
-- response_time (seconds)
+- ``response_time_secs`` — time from request scheduled to response received, in **seconds** (e.g. ``1.98`` = 1.98 s)
 - fingerprint
 - ``error`` / ``success`` — failed downloads include the exception message
 

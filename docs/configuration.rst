@@ -134,7 +134,7 @@ What gets stored
 
 - ``jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats)
 - ``job_items`` — JSON items with ``crawled_at``
-- ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, error, success
+- ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success
 - ``job_logs`` — time, logger, level, message, exception
 
 **Search cluster**

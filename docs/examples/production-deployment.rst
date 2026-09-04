@@ -365,7 +365,7 @@ PostgreSQL High Availability
        url VARCHAR(500) NOT NULL,
        method VARCHAR(10) NOT NULL,
        status_code INTEGER,
-       response_time FLOAT,
+       response_time_secs FLOAT,
        fingerprint VARCHAR(255),
        parent_url VARCHAR(500),
        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -440,7 +440,7 @@ Production Monitoring Setup
            self.items_scraped = Gauge('scrapy_items_scraped_total', 'Total items scraped', ['job_id'])
            self.requests_made = Gauge('scrapy_requests_made_total', 'Total requests made', ['job_id'])
            self.error_rate = Gauge('scrapy_error_rate', 'Error rate percentage', ['job_id'])
-           self.avg_response_time = Gauge('scrapy_avg_response_time_seconds', 'Average response time', ['job_id'])
+           self.avg_response_time = Gauge('scrapy_avg_response_time_secs', 'Average response time', ['job_id'])
            self.active_jobs = Gauge('scrapy_active_jobs', 'Number of active jobs')
            self.queue_size = Gauge('scrapy_queue_size', 'Size of job queue')
 
@@ -456,7 +456,7 @@ Production Monitoring Setup
                        job_id,
                        COUNT(DISTINCT ji.id) as items_count,
                        COUNT(DISTINCT jr.id) as requests_count,
-                       AVG(jr.response_time) as avg_response_time,
+                       AVG(jr.response_time_secs) as avg_response_time,
                        COUNT(CASE WHEN jr.status_code >= 400 THEN 1 END) * 100.0 / COUNT(jr.id) as error_rate
                    FROM job_items ji
                    LEFT JOIN job_requests jr ON ji.job_id = jr.job_id
@@ -516,7 +516,7 @@ Alerting Configuration
          description: "Error rate is {{ $value }}% for job {{ $labels.job_id }}"
 
      - alert: ScrapySlowResponseTime
-       expr: scrapy_avg_response_time_seconds > 5
+       expr: scrapy_avg_response_time_secs > 5
        for: 10m
        labels:
          severity: warning

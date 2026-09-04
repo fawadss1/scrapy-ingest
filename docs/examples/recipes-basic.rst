@@ -44,7 +44,7 @@ Expected tables
 ---------------
 
 - ``job_items``: JSON items
-- ``job_requests``: requests with parent_url, response_time, error, success
+- ``job_requests``: requests with parent_url, ``response_time_secs``, error, success
 - ``job_logs``: startup → closed, plus ``print()``
 
 Tips

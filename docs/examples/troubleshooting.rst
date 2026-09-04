@@ -130,7 +130,7 @@ Table Creation Issues
           url VARCHAR(200) NOT NULL,
           method VARCHAR(10) NOT NULL,
           status_code INTEGER,
-          response_time FLOAT,
+          response_time_secs FLOAT,
           fingerprint VARCHAR(255),
           parent_url VARCHAR(255),
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

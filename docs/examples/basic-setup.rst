@@ -125,7 +125,7 @@ Basic Setup Examples
    -- Performance analysis
    SELECT
        SPLIT_PART(url, '/', 3) as domain,
-       AVG(response_time) as avg_response_time,
+       AVG(response_time_secs) as avg_response_time,
        COUNT(*) as request_count,
        COUNT(CASE WHEN status_code >= 400 THEN 1 END) as error_count
    FROM job_requests
@@ -376,7 +376,7 @@ After running the spider, your database will contain:
 
 .. code-block:: text
 
-   | id | url                                      | method | status_code | response_time |
+   | id | url                                      | method | status_code | response_time_secs |
    |----|------------------------------------------|--------|-------------|---------------|
    | 1  | https://example-store.com/products      | GET    | 200         | 0.245         |
    | 2  | https://example-store.com/headphones    | GET    | 200         | 0.189         |

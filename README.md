@@ -147,7 +147,7 @@ Indexes are created on first write if they do not exist.
 |----------------|---------------------------------------------------------------------------------------------------------|
 | `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats |
 | `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                         |
-| `job_requests` | url, parent_url, parent_id, status, response_time, fingerprint, error, success                          |
+| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success |
 | `job_logs`     | time, logger, level, message, exception                                                                 |
 
 Request `parent_url` is the page that scheduled the request (e.g. sitemap → product). Start URLs are `null`. The request `fingerprint` is a SHA1 hash of method + canonical URL for parent lookup.

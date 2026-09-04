@@ -60,7 +60,7 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 
 - ``jobs`` — per-crawl summary (counts, crawl speed, finish reason, stats)
 - ``job_items`` — JSON items (with ``crawled_at``)
-- ``job_requests`` — url, ``parent_url``, status, response_time, error, success
+- ``job_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success
 - ``job_logs`` — structured job logs including ``print()``
 
 **Search** — indexes created on first flush (default prefix ``ingest``):
