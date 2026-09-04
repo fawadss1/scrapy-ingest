@@ -17,6 +17,7 @@ autodoc_mock_imports = [
     'psycopg2',
     'itemadapter',
     'twisted',
+    'opensearchpy',
 ]
 
 project = 'Scrapy Ingest'

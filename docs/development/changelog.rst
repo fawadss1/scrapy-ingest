@@ -4,6 +4,9 @@ Changelog
 [Unreleased]
 ------------
 
+### Added
+- Optional Elasticsearch / OpenSearch indexing via ``INGEST_TO_SEARCH``. Works alongside Postgres/MySQL (``INGEST_TO_DATABASE``, default ``True``) or on its own. Uses ``opensearch-py`` (compatible with Elasticsearch and OpenSearch REST APIs).
+
 [1.1.1] - 2026-09-02
 --------------------
 

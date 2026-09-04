@@ -22,7 +22,7 @@ Scrapy Ingest
    :target: https://github.com/fawadss1/scrapy-ingest/releases
    :alt: Changelog
 
-Save your Scrapy items, requests, logs, and stats to PostgreSQL or MySQL with a minimal setup.
+Save your Scrapy items, requests, logs, and stats to PostgreSQL, MySQL, Elasticsearch, or OpenSearch with a minimal setup.
 
 Quick Start
 -----------
@@ -45,19 +45,18 @@ Only the item pipeline is required — requests, logs, stats, parent_url, and er
        'scrapy_ingest.pipelines.DbInsertPipeline': 300,
    }
 
-   # Pick ONE of the two database config styles:
+   # Destination (default: database only)
+   INGEST_TO_DATABASE = True
+   INGEST_TO_SEARCH = False
+
+   # Database (when INGEST_TO_DATABASE = True)
    DB_URL = "postgresql://user:password@localhost:5432/database"
    # DB_URL = "mysql://user:password@localhost:3306/database"
-   # Or discrete fields (no URL encoding needed):
-   # DB_HOST = "localhost"
-   # DB_PORT = 5432
-   # DB_USER = "user"
-   # DB_PASSWORD = "password"
-   # DB_NAME = "database"
 
-   # Optional
+   # Search (when INGEST_TO_SEARCH = True)
+   # SEARCH_URL = "http://localhost:9200"
+
    CREATE_TABLES = True
-   # JOB_ID = 1  # or omit to auto-generate a unique id
 
 3) Run
 ~~~~~~
@@ -73,6 +72,7 @@ Notes
 - Or use the discrete fields above to avoid encoding entirely.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
 - Logs cover startup → crawl → stats dump → closed (plus ``print()`` spider lines).
+- Enable search with ``INGEST_TO_SEARCH = True`` and ``SEARCH_URL``. See :doc:`examples/recipes-search`.
 
 Docs
 ----
@@ -82,6 +82,7 @@ Docs
    installation
    quickstart
    configuration
+   examples/recipes-search
    examples/recipes-basic
    examples/recipes-items-only
    examples/recipes-requests
@@ -92,5 +93,5 @@ Docs
 Links
 -----
 
-- GitHub: https://github.com/fawadss1/scrapy_item_ingest
+- GitHub: https://github.com/fawadss1/scrapy-ingest
 - License: MIT
