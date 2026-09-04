@@ -21,6 +21,16 @@ from .pipelines.items import ItemsPipeline
 from .pipelines.requests import RequestsPipeline
 from .extensions.request_logger import RequestLogger
 from .config.settings import Settings, validate_settings
+from .exceptions import (
+    ConfigurationError,
+    DatabaseError,
+    DependencyError,
+    FlushError,
+    IngestConnectionError,
+    IngestError,
+    SchemaError,
+    SearchError,
+)
 
 __all__ = [
     "DbInsertPipeline",
@@ -31,6 +41,16 @@ __all__ = [
     "RequestLogger",
     "Settings",
     "validate_settings",
+
+    "IngestError",
+    "ConfigurationError",
+    "DependencyError",
+    "IngestConnectionError",
+    "DatabaseError",
+    "SchemaError",
+    "SearchError",
+    "FlushError",
+
     "__version__",
     "__author__",
     "__description__",
