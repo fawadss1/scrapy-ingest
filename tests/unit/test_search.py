@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from scrapy_ingest.config.settings import Settings, validate_settings
+from scrapy_ingest.exceptions import ConfigurationError, IngestConnectionError
 from scrapy_ingest.database.search import SearchClient, SearchWriter
 
 
@@ -32,12 +33,12 @@ class TestIngestDestinations:
 
     def test_search_requires_url(self):
         settings = _settings(INGEST_TO_DATABASE=False, INGEST_TO_SEARCH=True)
-        with pytest.raises(ValueError, match="SEARCH_URL is required"):
+        with pytest.raises(ConfigurationError, match="SEARCH_URL is required"):
             validate_settings(settings)
 
     def test_requires_at_least_one_destination(self):
         settings = _settings(INGEST_TO_DATABASE=False, INGEST_TO_SEARCH=False)
-        with pytest.raises(ValueError, match="at least one destination"):
+        with pytest.raises(ConfigurationError, match="at least one destination"):
             validate_settings(settings)
 
 
@@ -89,3 +90,13 @@ class TestSearchClient:
         assert kwargs["http_auth"] == ("elastic", "secret")
         assert kwargs["use_ssl"] is True
         mock_bulk.assert_called_once()
+
+    def test_ping_failure_raises_connection_error(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        mock_client = MagicMock()
+        mock_client.ping.return_value = False
+
+        with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
+            client = SearchClient(settings)
+            with pytest.raises(IngestConnectionError, match="did not respond to ping"):
+                client.ping()

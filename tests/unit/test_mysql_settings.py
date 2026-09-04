@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from scrapy_ingest.config.settings import Settings, validate_settings
+from scrapy_ingest.exceptions import ConfigurationError
 from scrapy_ingest.database.writer import DbWriter
 
 
@@ -53,7 +54,7 @@ class TestValidateSettings:
 
     def test_rejects_unknown_url_scheme(self):
         settings = _settings(DB_URL="oracle://u:p@localhost/db")
-        with pytest.raises(ValueError, match="Unsupported database URL scheme"):
+        with pytest.raises(ConfigurationError, match="Unsupported database URL scheme"):
             validate_settings(settings)
 
 
