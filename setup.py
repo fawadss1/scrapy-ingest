@@ -1,7 +1,6 @@
 from pathlib import Path
-from setuptools import setup, find_packages
-from setuptools.command.develop import develop
-from setuptools.command.install import install
+
+from setuptools import find_packages, setup
 
 BASE_DIR = Path(__file__).parent
 try:
@@ -11,38 +10,6 @@ except FileNotFoundError:
         "A comprehensive Scrapy extension for ingesting scraped items, "
         "requests, logs, and stats into PostgreSQL databases."
     )
-
-STATIC_DIR = BASE_DIR / "static"
-STATIC_FILES = [
-    str(path.relative_to(BASE_DIR))
-    for path in sorted(STATIC_DIR.glob("*"))
-    if path.is_file()
-]
-
-PTH = "import scrapy_ingest.extensions.log_handler\n"
-
-
-def _pth(dirpath):
-    if dirpath:
-        try:
-            Path(dirpath).joinpath("scrapy_ingest_early.pth").write_text(
-                PTH, encoding="utf-8"
-            )
-        except Exception:
-            pass
-
-
-class DevelopCommand(develop):
-    def run(self):
-        develop.run(self)
-        _pth(getattr(self, "install_dir", None) or self.install_lib)
-
-
-class InstallCommand(install):
-    def run(self):
-        install.run(self)
-        _pth(self.install_lib)
-
 
 setup(
     name="scrapy-ingest",
@@ -107,8 +74,10 @@ setup(
             "pytest-mock>=3.8.0",
         ],
     },
-    cmdclass={"develop": DevelopCommand, "install": InstallCommand},
     entry_points={
+        "console_scripts": [
+            "scrapy-ingest=scrapy_ingest.cli:main",
+        ],
         "scrapy.pipelines": [
             "db_ingest = scrapy_ingest.pipelines.main:DbInsertPipeline"
         ],
@@ -118,7 +87,5 @@ setup(
         ],
     },
     python_requires=">=3.10",
-    include_package_data=True,
-    data_files=[("scrapy-ingest/static", STATIC_FILES)] if STATIC_FILES else [],
     zip_safe=False,
 )
