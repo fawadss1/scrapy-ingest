@@ -27,7 +27,7 @@ Scrapy Ingest
    :target: https://github.com/fawadss1/scrapy-ingest/releases
    :alt: Changelog
 
-Save your Scrapy items, requests, logs, and stats to PostgreSQL, MySQL, Elasticsearch, or OpenSearch with a minimal setup.
+One pipeline. Full crawl observability in SQL or Elasticsearch.
 
 Quick Start
 -----------

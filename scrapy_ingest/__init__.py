@@ -12,7 +12,7 @@ install_early()
 
 __version__ = _pkg_meta.version or "1.3.0"
 __author__ = _pkg_meta.author or "Fawad Ali"
-__description__ = "Scrapy extension for database ingestion with job/spider tracking"
+__description__ = "One pipeline. Full crawl observability in SQL or Elasticsearch."
 
 from .pipelines.main import DbInsertPipeline
 from .extensions.logging import LoggingExtension

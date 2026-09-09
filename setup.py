@@ -14,7 +14,7 @@ except FileNotFoundError:
 setup(
     name="scrapy-ingest",
     version="1.3.0",
-    description="Scrapy extension for database ingestion with job/spider tracking",
+    description="One pipeline. Full crawl observability in SQL or Elasticsearch.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Fawad Ali",

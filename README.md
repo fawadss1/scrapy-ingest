@@ -11,9 +11,9 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/fawadss1/scrapy-ingest/blob/master/LICENSE)
 [![Changelog](https://img.shields.io/badge/changelog-releases-informational)](https://github.com/fawadss1/scrapy-ingest/releases)
 
-A Scrapy addon that saves **items, requests, logs, and stats** to **PostgreSQL**, **MySQL**, **Elasticsearch**, or **OpenSearch** — with parent_url tracking, failed-request errors, and full job log capture (including `print()`).
+**One pipeline. Full crawl observability in SQL or Elasticsearch.**
 
-You choose where data goes by setting connection URLs — relational database, Elasticsearch/OpenSearch, or **both**.
+Set `DB_URL`, `SEARCH_URL`, or both — items, requests, logs, stats, parent URLs, and errors are captured automatically.
 
 ## Install
 
