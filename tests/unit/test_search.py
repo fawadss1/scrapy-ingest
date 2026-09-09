@@ -1,7 +1,9 @@
+import warnings
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
+from opensearchpy.exceptions import OpenSearchWarning
 
 from scrapy_ingest.config.settings import Settings, validate_settings
 from scrapy_ingest.exceptions import ConfigurationError, IngestConnectionError
@@ -113,3 +115,23 @@ class TestSearchClient:
             client = SearchClient(settings)
             with pytest.raises(IngestConnectionError, match="did not respond to ping"):
                 client.ping()
+
+    def test_ping_suppresses_cluster_advisory_warnings(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        mock_client = MagicMock()
+
+        def ping_with_warning():
+            warnings.warn(
+                "Elasticsearch built-in security features are not enabled.",
+                category=OpenSearchWarning,
+            )
+            return True
+
+        mock_client.ping.side_effect = ping_with_warning
+
+        with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
+            client = SearchClient(settings)
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always", OpenSearchWarning)
+                client.ping()
+        assert not caught

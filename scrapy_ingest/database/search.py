@@ -1,8 +1,11 @@
 """Bulk index ingest batches to Elasticsearch or OpenSearch."""
 import logging
+import warnings
+from contextlib import contextmanager
 from datetime import datetime
 
 from opensearchpy import OpenSearch
+from opensearchpy.exceptions import OpenSearchWarning
 from opensearchpy.helpers import bulk as os_bulk
 
 from ..exceptions import IngestConnectionError
@@ -10,6 +13,14 @@ from ..utils.serialization import json_safe
 from ..utils.time import get_current_datetime
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def _ignore_cluster_warnings():
+    """Elasticsearch may return advisory Warning headers (e.g. security disabled)."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", OpenSearchWarning)
+        yield
 
 
 class SearchClient:
@@ -30,7 +41,9 @@ class SearchClient:
         self._ready = set()
 
     def ping(self):
-        if not self._client.ping():
+        with _ignore_cluster_warnings():
+            ok = self._client.ping()
+        if not ok:
             raise IngestConnectionError("Search cluster did not respond to ping")
 
     def close(self):
@@ -39,20 +52,23 @@ class SearchClient:
     def ensure_index(self, name):
         if name in self._ready:
             return
-        if not self._client.indices.exists(index=name):
-            self._client.indices.create(index=name)
+        with _ignore_cluster_warnings():
+            if not self._client.indices.exists(index=name):
+                self._client.indices.create(index=name)
         self._ready.add(name)
 
     def index(self, index, doc_id, doc):
         self.ensure_index(index)
-        self._client.index(index=index, id=doc_id, body=json_safe(doc))
+        with _ignore_cluster_warnings():
+            self._client.index(index=index, id=doc_id, body=json_safe(doc))
 
     def bulk(self, index, docs):
         if not docs:
             return
         self.ensure_index(index)
         actions = ({"_index": index, "_source": json_safe(doc)} for doc in docs)
-        _, errors = self._bulk(self._client, actions, raise_on_error=False)
+        with _ignore_cluster_warnings():
+            _, errors = self._bulk(self._client, actions, raise_on_error=False)
         if errors:
             logger.warning("Search bulk had %s error(s)", len(errors))
 
