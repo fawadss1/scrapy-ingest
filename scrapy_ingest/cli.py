@@ -33,7 +33,8 @@ def _enable_vt():
 
 def _progress(text, *, done=False):
     _enable_vt()
-    sys.stdout.write(f"\r{text.ljust(_WIDTH)}{'\n' if done else ''}")
+    suffix = "\n" if done else ""
+    sys.stdout.write(f"\r{text.ljust(_WIDTH)}{suffix}")
     sys.stdout.flush()
 
 
