@@ -4,6 +4,17 @@ Changelog
 [Unreleased]
 ------------
 
+[1.3.1] - 2026-09-09
+--------------------
+
+### Changed
+- Project tagline is now **One pipeline. Full crawl observability in SQL or Elasticsearch.** (PyPI short description, README, docs, and banner logos).
+- Banner logos rebuilt (``static/logo.png``, ``static/logo-dark.png``) with icon, title, spacing, and single-line tagline.
+- Logo assets live in one place only: ``static/`` (removed duplicate copies from ``docs/_static/``). Sphinx docs reference ``../static/``.
+- README PyPI logo uses a GitHub raw URL so the image renders on pypi.org (wheels do not bundle ``static/``).
+- ``check-config`` no longer prints a redundant command header before the spinner output.
+- GitHub project URLs in ``setup.py`` point to ``fawadss1/scrapy-ingest``.
+
 [1.3.0] - 2026-09-09
 --------------------
 
