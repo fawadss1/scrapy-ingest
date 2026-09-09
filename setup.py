@@ -12,6 +12,13 @@ except FileNotFoundError:
         "requests, logs, and stats into PostgreSQL databases."
     )
 
+STATIC_DIR = BASE_DIR / "static"
+STATIC_FILES = [
+    str(path.relative_to(BASE_DIR))
+    for path in sorted(STATIC_DIR.glob("*"))
+    if path.is_file()
+]
+
 PTH = "import scrapy_ingest.extensions.log_handler\n"
 
 
@@ -112,5 +119,6 @@ setup(
     },
     python_requires=">=3.10",
     include_package_data=True,
+    data_files=[("scrapy-ingest/static", STATIC_FILES)] if STATIC_FILES else [],
     zip_safe=False,
 )

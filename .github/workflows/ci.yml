@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    name: pytest (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and test deps
+        run: python -m pip install --upgrade pip setuptools wheel && pip install -e ".[test]"
+
+      - name: Run unit tests
+        run: python -m pytest tests/unit -q
+
+  sdist:
+    name: Verify sdist includes static assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build sdist
+        run: python -m pip install --upgrade pip build && python -m build --sdist
+
+      - name: Check logos are in sdist
+        shell: bash
+        run: |
+          tar tzf dist/*.tar.gz | grep -E 'static/logo\.png$'
+          tar tzf dist/*.tar.gz | grep -E 'static/logo-icon\.png$'
+          tar tzf dist/*.tar.gz | grep -E 'static/logo-dark\.png$'
