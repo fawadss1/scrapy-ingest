@@ -1,3 +1,8 @@
+.. image:: _static/logo.png
+   :align: center
+   :width: 640px
+   :alt: scrapy-ingest
+
 Scrapy Ingest
 ===================
 

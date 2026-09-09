@@ -1,6 +1,11 @@
 Installation
 ============
 
+.. image:: _static/logo.png
+   :align: center
+   :width: 520px
+   :alt: scrapy-ingest
+
 Requirements
 ------------
 

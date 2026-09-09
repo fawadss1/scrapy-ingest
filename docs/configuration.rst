@@ -1,6 +1,11 @@
 Configuration
 =============
 
+.. image:: _static/logo.png
+   :align: center
+   :width: 520px
+   :alt: scrapy-ingest
+
 Essential settings for ``settings.py``. See also :doc:`examples/recipes-search` for Elasticsearch / OpenSearch examples.
 
 Pipeline

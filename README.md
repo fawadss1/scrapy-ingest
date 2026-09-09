@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="static/logo.png" alt="scrapy-ingest" width="640">
+</p>
+
 # Scrapy Ingest
 
 [![PyPI version](https://img.shields.io/pypi/v/scrapy-ingest?color=blue)](https://pypi.org/project/scrapy-ingest/)

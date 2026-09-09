@@ -1,6 +1,11 @@
 Quick Start
 ===========
 
+.. image:: _static/logo.png
+   :align: center
+   :width: 520px
+   :alt: scrapy-ingest
+
 Get running in minutes.
 
 1) Install
