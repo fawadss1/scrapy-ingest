@@ -4,6 +4,9 @@ Changelog
 [Unreleased]
 ------------
 
+### Added
+- ``scrapy-ingest check-config`` CLI to validate ``DB_URL`` / ``SEARCH_URL`` and ping configured destinations before crawling.
+
 [1.2.0] - 2026-09-04
 --------------------
 

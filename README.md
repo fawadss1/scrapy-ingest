@@ -153,6 +153,23 @@ Data flushes on batch size, every 10 seconds, and on engine/process stop.
 
 When the spider closes, a crawl summary is printed to stderr (visible even when `LOG_LEVEL` is `ERROR`) with job id, spider, database URL, Elasticsearch/OpenSearch URL, table/index names, counts, and elapsed time. Set `INGEST_SHOW_SUMMARY = False` to hide it.
 
+## CLI
+
+Validate settings and ping configured destinations before running a spider:
+
+```bash
+scrapy-ingest check-config
+```
+
+From your Scrapy project directory (reads `settings.py` via Scrapy). Override URLs if needed:
+
+```bash
+scrapy-ingest check-config --db-url "postgresql://user:pass@localhost:5432/db"
+scrapy-ingest check-config --search-url "http://localhost:9200"
+```
+
+Prints a summary table to stderr and exits `0` when all configured destinations are reachable.
+
 ## Useful settings
 
 | Setting                                                     | Default        | Description                                                 |

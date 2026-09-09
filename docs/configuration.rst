@@ -164,6 +164,7 @@ Standalone components
 Tips
 ----
 
+- Run ``scrapy-ingest check-config`` from your Scrapy project to validate ``DB_URL`` / ``SEARCH_URL`` and ping each configured destination before crawling.
 - Password has ``@`` or ``$``? If using ``DB_URL``, encode them: ``@`` -> ``%40``, ``$`` -> ``%24``.
 - Prefer discrete ``DB_*`` fields to avoid URL encoding.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
