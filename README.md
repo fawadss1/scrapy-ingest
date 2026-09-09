@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="static/logo.png" alt="scrapy-ingest" width="640">
+  <img src="https://raw.githubusercontent.com/fawadss1/scrapy-ingest/master/static/logo.png" alt="scrapy-ingest" width="640">
 </p>
 
 # Scrapy Ingest

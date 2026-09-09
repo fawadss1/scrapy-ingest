@@ -13,17 +13,17 @@ except FileNotFoundError:
 
 setup(
     name="scrapy-ingest",
-    version="1.2.0",
+    version="1.3.0",
     description="Scrapy extension for database ingestion with job/spider tracking",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Fawad Ali",
     author_email="fawadstar6@gmail.com",
-    url="https://github.com/fawadss1/scrapy_item_ingest",
+    url="https://github.com/fawadss1/scrapy-ingest",
     project_urls={
         "Documentation": "https://scrapy-ingest.readthedocs.io/",
-        "Source": "https://github.com/fawadss1/scrapy_item_ingest",
-        "Tracker": "https://github.com/fawadss1/scrapy_item_ingest/issues",
+        "Source": "https://github.com/fawadss1/scrapy-ingest",
+        "Tracker": "https://github.com/fawadss1/scrapy-ingest/issues",
     },
     packages=find_packages(),
     classifiers=[

@@ -4,8 +4,16 @@ Changelog
 [Unreleased]
 ------------
 
+[1.3.0] - 2026-09-09
+--------------------
+
 ### Added
-- ``scrapy-ingest check-config`` CLI to validate ``DB_URL`` / ``SEARCH_URL`` and ping configured destinations before crawling.
+- ``scrapy-ingest check-config`` CLI to validate ``DB_URL`` / ``SEARCH_URL`` and ping configured destinations before crawling. Shows a live spinner per step and prints a summary table with exit code ``0`` / ``1``.
+- Spider callback errors are linked to ``job_requests.error``: ``RequestLogger`` hooks Scrapy's ``spider_error`` signal and attaches the request URL plus full traceback to the matching request row (and Elasticsearch/OpenSearch doc). ``job_logs.exception`` is unchanged.
+
+### Changed
+- Pip installs are leaner: logo ``data_files`` and the ``scrapy_ingest_early.pth`` site hook were removed. Early log buffering still runs when ``scrapy_ingest`` is imported.
+- OpenSearch/Elasticsearch advisory ``Warning`` headers (for example security disabled) are suppressed during search ping and writes so ``check-config`` output stays clean.
 
 [1.2.0] - 2026-09-04
 --------------------
