@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-.. image:: _static/logo.png
+.. image:: ../static/logo.png
    :align: center
    :width: 520px
    :alt: scrapy-ingest
