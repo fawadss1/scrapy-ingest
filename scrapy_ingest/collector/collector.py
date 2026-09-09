@@ -28,6 +28,16 @@ class DataCollector:
         with self.lock:
             self.requests.append(request_log)
 
+    def mark_request_error(self, fingerprint, error):
+        """Attach a spider callback error to the most recent matching request."""
+        with self.lock:
+            for req in reversed(self.requests):
+                if req.get("fingerprint") == fingerprint:
+                    req["error"] = error
+                    req["success"] = False
+                    return True
+        return False
+
     def add_item(self, item: dict):
         with self.lock:
             self.items.append(item)
