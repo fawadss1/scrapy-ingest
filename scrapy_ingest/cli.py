@@ -6,33 +6,14 @@ import time
 
 from .config.settings import Settings, validate_settings
 from .exceptions import ConfigurationError, IngestConnectionError
+from .jobs.show import load_job_report, load_jobs_list
 from .utils.console import format_table, info
 from .utils.summary import display_database
 
 _SPINNER, _MIN_SPIN, _WIDTH = "|/-\\", 0.5, 88
-_VT = False
-
-
-def _enable_vt():
-    global _VT
-    if _VT:
-        return
-    _VT = True
-    if sys.platform != "win32":
-        return
-    try:
-        import ctypes
-
-        k = ctypes.windll.kernel32
-        h, mode = k.GetStdHandle(-11), ctypes.c_ulong()
-        k.GetConsoleMode(h, ctypes.byref(mode))
-        k.SetConsoleMode(h, mode.value | 4)
-    except Exception:
-        pass
 
 
 def _progress(text, *, done=False):
-    _enable_vt()
     suffix = "\n" if done else ""
     sys.stdout.write(f"\r{text.ljust(_WIDTH)}{suffix}")
     sys.stdout.flush()
@@ -65,6 +46,17 @@ def _run_spinner(message, action):
     if "e" in box:
         raise box["e"]
     return box.get("v")
+
+
+def _steps(use_spinner):
+    def run(msg, fn):
+        return _run_spinner(msg, fn) if use_spinner else fn()
+
+    def finish(msg, status):
+        if use_spinner:
+            _progress(f"  [{status}] {msg}", done=True)
+
+    return run, finish
 
 
 def _load_crawler_settings(db_url=None, search_url=None):
@@ -100,14 +92,7 @@ def _ping_search(settings):
 def run_check_config(db_url=None, search_url=None, use_spinner=True):
     """Validate settings and ping configured database and search destinations."""
     rows, ok = [], True
-    spin = use_spinner
-
-    def run(msg, fn):
-        return _run_spinner(msg, fn) if spin else fn()
-
-    def finish(msg, status):
-        if spin:
-            _progress(f"  [{status}] {msg}", done=True)
+    run, finish = _steps(use_spinner)
 
     try:
         settings = run(
@@ -129,24 +114,24 @@ def run_check_config(db_url=None, search_url=None, use_spinner=True):
         return False, rows
 
     for kind, enabled, url, skip, ping, ok_msg, info in (
-        (
-            "database",
-            settings.ingest_to_database,
-            settings.db_url,
-            "Database ping",
-            lambda: _ping_db(settings),
-            "connected",
-            ("tables", settings.db_jobs_table),
-        ),
-        (
-            "search",
-            settings.ingest_to_search,
-            settings.search_url,
-            "Search ping",
-            lambda: _ping_search(settings),
-            "cluster responded",
-            ("indexes", settings.search_index_prefix),
-        ),
+            (
+                    "database",
+                    settings.ingest_to_database,
+                    settings.db_url,
+                    "Database ping",
+                    lambda: _ping_db(settings),
+                    "connected",
+                    ("tables", settings.db_jobs_table),
+            ),
+            (
+                    "search",
+                    settings.ingest_to_search,
+                    settings.search_url,
+                    "Search ping",
+                    lambda: _ping_search(settings),
+                    "cluster responded",
+                    ("indexes", settings.search_index_prefix),
+            ),
     ):
         if not enabled:
             rows.append(("config", kind, "-", "not configured"))
@@ -168,6 +153,51 @@ def run_check_config(db_url=None, search_url=None, use_spinner=True):
     return ok, rows
 
 
+def run_jobs_show(job_id=None, db_url=None, search_url=None, limit=50, use_spinner=True):
+    """Load job(s) from SQL or search; return ``(job, report, error)``."""
+    run, finish = _steps(use_spinner)
+    try:
+        settings = run(
+            "Loading Scrapy settings",
+            lambda: Settings(_load_crawler_settings(db_url, search_url)),
+        )
+        validate_settings(settings)
+        finish("Loading Scrapy settings", "OK")
+    except ConfigurationError as exc:
+        finish("Loading Scrapy settings", "FAIL")
+        return None, None, str(exc)
+
+    if job_id:
+        label = f"Loading job ({job_id})"
+        loader = lambda: load_job_report(settings, job_id)
+    else:
+        label = "Loading jobs"
+        loader = lambda: (None, load_jobs_list(settings, limit=limit))
+
+    try:
+        job, report = run(label, loader)
+    except IngestConnectionError as exc:
+        finish(label, "FAIL")
+        return None, None, f"connection error: {_truncate(exc)}"
+
+    if job_id and not job:
+        finish(label, "FAIL")
+        return None, None, f"job not found: {job_id}"
+    finish(label, "OK")
+    return job, report, None
+
+
+def jobs_show_command(args):
+    _, report, error = run_jobs_show(
+        args.job_id, db_url=args.db_url, search_url=args.search_url, limit=args.limit
+    )
+    if error:
+        info(f"scrapy-ingest jobs show: {error}")
+        return 1
+    info(f"\n{report}\n")
+    return 0
+
+
 def check_config_command(args):
     ok, rows = run_check_config(db_url=args.db_url, search_url=args.search_url)
     info("")
@@ -187,6 +217,24 @@ def main(argv=None):
     check.add_argument("--db-url", help="Override DB_URL from Scrapy settings")
     check.add_argument("--search-url", help="Override SEARCH_URL from Scrapy settings")
     check.set_defaults(func=check_config_command)
+
+    jobs = sub.add_parser("jobs", help="Query persisted ingest jobs")
+    jobs_sub = jobs.add_subparsers(dest="jobs_command", required=True)
+    show = jobs_sub.add_parser("show", help="Show job summary or list recent jobs")
+    show.add_argument(
+        "job_id",
+        nargs="?",
+        help="Job id (omit to list recent jobs)",
+    )
+    show.add_argument("--db-url", help="Override DB_URL from Scrapy settings")
+    show.add_argument("--search-url", help="Override SEARCH_URL from Scrapy settings")
+    show.add_argument(
+        "--limit",
+        type=int,
+        default=50,
+        help="Max jobs to list when job_id is omitted (default: 50)",
+    )
+    show.set_defaults(func=jobs_show_command)
 
     args = parser.parse_args(argv)
     return args.func(args)
