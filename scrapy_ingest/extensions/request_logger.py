@@ -1,3 +1,4 @@
+import http.client
 import time
 
 from scrapy import signals
@@ -6,6 +7,18 @@ from ..collector import ensure_collector
 from ..middleware import install_parent_url_tracking
 from ..utils.fingerprint import get_request_fingerprint
 from ..utils.parent import get_parent_url
+
+
+def _http_error(response):
+    """Return an error label for non-2xx HTTP responses, else ``None``."""
+    status = int(response.status)
+    if 200 <= status < 300:
+        return None
+    reason = getattr(response, "reason", None) or http.client.responses.get(status, "")
+    reason = str(reason).strip()
+    if reason:
+        return f"HTTP {status} {reason}"
+    return f"HTTP {status}"
 
 
 def _format_spider_error(failure):
@@ -52,6 +65,7 @@ class RequestLogger:
 
     def response_received(self, response, request, spider):
         start = request.meta.get("start_time", time.time())
+        success = 200 <= response.status < 300
         self.collector.add_request(
             {
                 "url": request.url,
@@ -60,8 +74,8 @@ class RequestLogger:
                 "status_code": response.status,
                 "response_time_secs": round(time.time() - start, 2),
                 "fingerprint": get_request_fingerprint(request),
-                "error": None,
-                "success": 200 <= response.status < 300,
+                "error": _http_error(response),
+                "success": success,
             }
         )
 
