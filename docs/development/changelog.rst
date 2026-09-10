@@ -4,8 +4,16 @@ Changelog
 [Unreleased]
 ------------
 
+[1.4.0] - 2026-09-10
+--------------------
+
 ### Added
-- ``scrapy-ingest jobs show`` CLI: list recent jobs when ``job_id`` is omitted (``--limit``, default 50), or print one job as a Field | Value table. Reads from SQL or Elasticsearch/OpenSearch (``SEARCH_URL`` when no database is configured). Spinner while loading, same as ``check-config``.
+- ``scrapy-ingest jobs show`` CLI — list recent jobs (``scrapy-ingest jobs show``, ``--limit`` default 50) or print one job as a Field | Value table (``scrapy-ingest jobs show <job_id>``). Spinner while loading, same as ``check-config``. Options: ``--db-url``, ``--search-url``.
+- ``jobs show`` reads from Elasticsearch/OpenSearch when only ``SEARCH_URL`` is configured (``ingest-jobs`` index). When both ``DB_URL`` and ``SEARCH_URL`` are set, SQL is used for queries; crawls still dual-write to both.
+
+### Changed
+- HTTP 4xx/5xx responses are stored in ``job_requests.error`` (for example ``HTTP 404 Not Found``) with ``success=False``, in addition to downloader and spider callback errors.
+- CLI spinner uses carriage-return updates only; unused Windows VT-mode helper removed.
 
 [1.3.1] - 2026-09-09
 --------------------

@@ -13,7 +13,7 @@ except FileNotFoundError:
 
 setup(
     name="scrapy-ingest",
-    version="1.3.1",
+    version="1.4.0",
     description="One pipeline. Full crawl observability in SQL or Elasticsearch.",
     long_description=long_description,
     long_description_content_type="text/markdown",
