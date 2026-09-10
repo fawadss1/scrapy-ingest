@@ -6,8 +6,53 @@ from scrapy_ingest.collector.collector import DataCollector
 from scrapy_ingest.extensions.request_logger import (
     RequestLogger,
     _format_spider_error,
+    _http_error,
     _request_from_spider_error,
 )
+
+
+class TestHttpError:
+    def test_success_response_has_no_error(self):
+        assert _http_error(MagicMock(status=200)) is None
+
+    def test_not_found_includes_reason(self):
+        response = MagicMock(status=404, reason="Not Found")
+        assert _http_error(response) == "HTTP 404 Not Found"
+
+    def test_server_error_without_reason(self):
+        response = MagicMock(status=502, reason="")
+        assert _http_error(response) == "HTTP 502 Bad Gateway"
+
+
+class TestRequestLoggerHttpErrors:
+    def setup_method(self):
+        self.collector = DataCollector()
+        self.logger = RequestLogger()
+        self.logger.crawler = MagicMock()
+        self.logger.collector = self.collector
+
+    def test_response_received_stores_http_error_for_404(self):
+        request = MagicMock()
+        request.url = "https://example.com/missing"
+        request.method = "GET"
+        request.meta = {"start_time": 1.0}
+        response = MagicMock(status=404, reason="Not Found")
+
+        with patch(
+            "scrapy_ingest.extensions.request_logger.get_request_fingerprint",
+            return_value="fp-404",
+        ):
+            with patch(
+                "scrapy_ingest.extensions.request_logger.get_parent_url",
+                return_value=None,
+            ):
+                with patch("scrapy_ingest.extensions.request_logger.time.time", return_value=2.0):
+                    self.logger.response_received(response, request, MagicMock())
+
+        row = self.collector.requests[0]
+        assert row["success"] is False
+        assert row["error"] == "HTTP 404 Not Found"
+        assert row["status_code"] == 404
 
 
 class TestSpiderErrorHelpers:
