@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-from opensearchpy.exceptions import OpenSearchWarning
+from opensearchpy.exceptions import NotFoundError, OpenSearchWarning
 
 from scrapy_ingest.config.settings import Settings, validate_settings
 from scrapy_ingest.exceptions import ConfigurationError, IngestConnectionError
@@ -135,3 +135,24 @@ class TestSearchClient:
                 warnings.simplefilter("always", OpenSearchWarning)
                 client.ping()
         assert not caught
+
+    def test_get_document_returns_none_when_missing(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        mock_client = MagicMock()
+        mock_client.get.side_effect = NotFoundError(404, "missing", {})
+
+        with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
+            client = SearchClient(settings)
+            assert client.get_document("ingest-jobs", "missing") is None
+
+    def test_search_documents_returns_sources(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        mock_client = MagicMock()
+        mock_client.search.return_value = {
+            "hits": {"hits": [{"_source": {"job_id": "j1", "status": "finished"}}]}
+        }
+
+        with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
+            client = SearchClient(settings)
+            docs = client.search_documents("ingest-jobs", size=5)
+        assert docs == [{"job_id": "j1", "status": "finished"}]

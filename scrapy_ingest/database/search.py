@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from datetime import datetime
 
 from opensearchpy import OpenSearch
-from opensearchpy.exceptions import OpenSearchWarning
+from opensearchpy.exceptions import NotFoundError, OpenSearchWarning
 from opensearchpy.helpers import bulk as os_bulk
 
 from ..exceptions import IngestConnectionError
@@ -71,6 +71,26 @@ class SearchClient:
             _, errors = self._bulk(self._client, actions, raise_on_error=False)
         if errors:
             logger.warning("Search bulk had %s error(s)", len(errors))
+
+    def get_document(self, index, doc_id):
+        """Return document ``_source`` or ``None`` if not found."""
+        try:
+            with _ignore_cluster_warnings():
+                resp = self._client.get(index=index, id=doc_id)
+            return resp.get("_source")
+        except NotFoundError:
+            return None
+
+    def search_documents(self, index, *, size=50, sort_field="started_at"):
+        """Return ``_source`` dicts from a match-all query, newest first."""
+        body = {
+            "size": size,
+            "sort": [{sort_field: {"order": "desc", "unmapped_type": "date"}}],
+            "query": {"match_all": {}},
+        }
+        with _ignore_cluster_warnings():
+            resp = self._client.search(index=index, body=body)
+        return [hit["_source"] for hit in resp.get("hits", {}).get("hits", [])]
 
 
 class SearchWriter:
