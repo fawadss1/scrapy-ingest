@@ -128,7 +128,7 @@ What gets stored
 
 - ``jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats)
 - ``job_items`` — JSON items with ``crawled_at``
-- ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success
+- ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success. The ``error`` column is set for download failures, HTTP 4xx/5xx (for example ``HTTP 404 Not Found``), and spider callback exceptions (full traceback linked to the request URL).
 - ``job_logs`` — time, logger, level, message, exception
 
 **Elasticsearch / OpenSearch**
@@ -161,10 +161,20 @@ Standalone components
    # Logs only
    EXTENSIONS = {'scrapy_ingest.extensions.LoggingExtension': 500}
 
+CLI
+---
+
+See :doc:`cli` for full details.
+
+- ``scrapy-ingest check-config`` — validate settings and ping ``DB_URL`` / ``SEARCH_URL`` before crawling
+- ``scrapy-ingest jobs show`` — list recent jobs from the database (newest first)
+- ``scrapy-ingest jobs show <job_id>`` — print one job summary (``jobs`` table columns)
+
 Tips
 ----
 
 - Run ``scrapy-ingest check-config`` from your Scrapy project to validate ``DB_URL`` / ``SEARCH_URL`` and ping each configured destination before crawling.
+- After a crawl, run ``scrapy-ingest jobs show`` to pick a job id, then ``scrapy-ingest jobs show <job_id>`` for full counts without writing SQL.
 - Password has ``@`` or ``$``? If using ``DB_URL``, encode them: ``@`` -> ``%40``, ``$`` -> ``%24``.
 - Prefer discrete ``DB_*`` fields to avoid URL encoding.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.

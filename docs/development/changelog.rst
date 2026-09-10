@@ -4,6 +4,9 @@ Changelog
 [Unreleased]
 ------------
 
+### Added
+- ``scrapy-ingest jobs show`` CLI: list recent jobs when ``job_id`` is omitted (``--limit``, default 50), or print one job as a Field | Value table. Reads from SQL or Elasticsearch/OpenSearch (``SEARCH_URL`` when no database is configured). Spinner while loading, same as ``check-config``.
+
 [1.3.1] - 2026-09-09
 --------------------
 

@@ -80,6 +80,7 @@ Docs
    installation
    quickstart
    configuration
+   cli
    examples/recipes-search
    examples/recipes-basic
    examples/recipes-items-only

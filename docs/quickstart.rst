@@ -55,6 +55,7 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 
 .. code-block:: bash
 
+   scrapy-ingest check-config
    scrapy crawl your_spider
 
 4) Verify
@@ -64,14 +65,21 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 
 - ``jobs`` — per-crawl summary (counts, crawl speed, finish reason, stats)
 - ``job_items`` — JSON items (with ``crawled_at``)
-- ``job_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success
+- ``job_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success (errors include HTTP 4xx/5xx and spider callback failures)
 - ``job_logs`` — structured job logs including ``print()``
 
 **Elasticsearch / OpenSearch** — indexes created on first flush (default prefix ``ingest``):
 
 - ``ingest-jobs``, ``ingest-job_items``, ``ingest-job_requests``, ``ingest-job_logs``
 
-When the spider closes, a crawl summary is printed to stderr with job id, destinations, counts, and elapsed time.
+When the spider closes, a crawl summary is printed to stderr with job id, destinations, counts, and elapsed time. List or re-print job data later:
+
+.. code-block:: bash
+
+   scrapy-ingest jobs show
+   scrapy-ingest jobs show <job_id>
+
+See :doc:`cli` for ``check-config`` and ``jobs show`` options.
 
 5) Troubleshooting
 ------------------

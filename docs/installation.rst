@@ -54,7 +54,10 @@ Run
 
 .. code-block:: bash
 
+   scrapy-ingest check-config
    scrapy crawl your_spider
+   scrapy-ingest jobs show
+   scrapy-ingest jobs show <job_id>
 
 Troubleshooting
 ---------------
@@ -68,6 +71,7 @@ Next steps
 ----------
 
 - :doc:`quickstart`
+- :doc:`cli`
 - :doc:`configuration`
 - :doc:`examples/recipes-search`
 - :doc:`examples/troubleshooting`

@@ -134,12 +134,12 @@ Indexes are created on first write if they do not exist.
 
 ### Relational database (Postgres / MySQL)
 
-| Table          | Contents                                                                                                |
-|----------------|---------------------------------------------------------------------------------------------------------|
-| `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats |
-| `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                         |
-| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success                     |
-| `job_logs`     | time, logger, level, message, exception                                                                 |
+| Table          | Contents                                                                                                                                        |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats                                         |
+| `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                                                                 |
+| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success (download errors, HTTP 4xx/5xx, spider callback tracebacks) |
+| `job_logs`     | time, logger, level, message, exception                                                                                                         |
 
 Request `parent_url` is the page that scheduled the request (e.g. sitemap → product). Start URLs are `null`. The request `fingerprint` is a SHA1 hash of method + canonical URL for parent lookup.
 
@@ -155,20 +155,42 @@ When the spider closes, a crawl summary is printed to stderr (visible even when 
 
 ## CLI
 
+Run from your Scrapy project directory (loads `settings.py` via Scrapy).
+
+### `check-config`
+
 Validate settings and ping configured destinations before running a spider:
 
 ```bash
 scrapy-ingest check-config
-```
-
-From your Scrapy project directory (reads `settings.py` via Scrapy). Override URLs if needed:
-
-```bash
 scrapy-ingest check-config --db-url "postgresql://user:pass@localhost:5432/db"
 scrapy-ingest check-config --search-url "http://localhost:9200"
 ```
 
-Prints a summary table to stderr and exits `0` when all configured destinations are reachable.
+Shows a spinner per step, prints a summary table to stderr, and exits `0` when all configured destinations are reachable.
+
+### `jobs show`
+
+List recent jobs or print one job summary from the database (requires `DB_URL`):
+
+```bash
+scrapy-ingest jobs show                              # list recent jobs
+scrapy-ingest jobs show --limit 20                   # list up to 20 jobs
+scrapy-ingest jobs show Rs_Spider-178826754-a1b2      # one job (Field | Value table)
+```
+
+The job id is the string shown in the end-of-crawl summary (or your `JOB_ID` setting). Exit `0` on success; exit `1` if a specific job id is missing or the database is unreachable.
+
+Typical workflow:
+
+```bash
+scrapy-ingest check-config
+scrapy crawl your_spider
+scrapy-ingest jobs show
+scrapy-ingest jobs show <job_id>
+```
+
+See [CLI docs](https://scrapy-ingest.readthedocs.io/en/latest/cli.html) for details.
 
 ## Useful settings
 
