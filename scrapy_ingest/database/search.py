@@ -82,12 +82,15 @@ class SearchClient:
         except NotFoundError:
             return None
 
-    def search_documents(self, index, *, size=50, sort_field="started_at"):
-        """Return ``_source`` dicts from a match-all query, newest first."""
+    def search_documents(self, index, *, size=50, sort_field="started_at", filters=()):
+        """Return ``_source`` dicts, newest first. Optional *filters* are ES ``bool.filter`` clauses."""
+        query = {"match_all": {}}
+        if filters:
+            query = {"bool": {"filter": list(filters)}}
         body = {
             "size": size,
             "sort": [{sort_field: {"order": "desc", "unmapped_type": "date"}}],
-            "query": {"match_all": {}},
+            "query": query,
         }
         with _ignore_cluster_warnings():
             resp = self._client.search(index=index, body=body)

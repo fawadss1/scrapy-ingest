@@ -75,6 +75,28 @@ def _fetchall(db, sql, params=()):
         return cur.fetchall()
 
 
+def _sql_list_filters(status=None, spider=None):
+    clauses, params = [], []
+    if status:
+        clauses.append("status = %s")
+        params.append(status)
+    if spider:
+        clauses.append("spider_name = %s")
+        params.append(spider)
+    if not clauses:
+        return "", ()
+    return f" WHERE {' AND '.join(clauses)}", tuple(params)
+
+
+def _search_list_filters(status=None, spider=None):
+    filters = []
+    if status:
+        filters.append({"term": {"status": status}})
+    if spider:
+        filters.append({"term": {"spider_name": spider}})
+    return tuple(filters)
+
+
 def fetch_job(db, settings, job_id):
     """Return a job dict keyed by column name, or ``None`` if not found."""
     row = db.execute(
@@ -90,24 +112,29 @@ def fetch_job_search(client, settings, job_id):
     return _normalize_job(doc, _KEYS)
 
 
-def fetch_jobs(db, settings, *, limit=50):
+def fetch_jobs(db, settings, *, limit=50, status=None, spider=None):
     """Return recent jobs from SQL, newest first."""
     table = settings.db_jobs_table
     cols = ", ".join(_LIST_KEYS)
+    where, params = _sql_list_filters(status, spider)
     order = "started_at DESC, id DESC"
     if getattr(settings, "db_dialect", "postgres") != "mysql":
         order = "started_at DESC NULLS LAST, id DESC"
     rows = _fetchall(
         db,
-        f"SELECT {cols} FROM {table} ORDER BY {order} LIMIT %s",
-        (limit,),
+        f"SELECT {cols} FROM {table}{where} ORDER BY {order} LIMIT %s",
+        params + (limit,),
     )
     return [_row_dict(_LIST_KEYS, row) for row in rows]
 
 
-def fetch_jobs_search(client, settings, *, limit=50):
+def fetch_jobs_search(client, settings, *, limit=50, status=None, spider=None):
     """Return recent jobs from the search index, newest first."""
-    docs = client.search_documents(_jobs_index(settings), size=limit)
+    docs = client.search_documents(
+        _jobs_index(settings),
+        size=limit,
+        filters=_search_list_filters(status, spider),
+    )
     return [_normalize_job(doc, _LIST_KEYS) for doc in docs]
 
 
@@ -119,11 +146,10 @@ def format_job_show(job):
 
 def format_jobs_list(jobs):
     """Format multiple jobs as one table."""
+    if not jobs:
+        return "(no jobs found)"
     rows = [tuple(_fmt(key, job.get(key)) for key in _LIST_KEYS) for job in jobs]
-    title = "[scrapy-ingest] jobs"
-    if not rows:
-        return f"{title}\n(no jobs found)"
-    return "\n".join((title, format_table(_LIST_LABELS, rows)))
+    return format_table(_LIST_LABELS, rows)
 
 
 @contextmanager
@@ -161,7 +187,7 @@ def load_job_report(settings, job_id):
         return (None, "") if job is None else (job, format_job_show(job))
 
 
-def load_jobs_list(settings, *, limit=50):
+def load_jobs_list(settings, *, limit=50, status=None, spider=None):
     """Load recent jobs from SQL or search."""
     _require_destination(settings)
     if settings.ingest_to_database:
@@ -169,11 +195,15 @@ def load_jobs_list(settings, *, limit=50):
 
         db = DatabaseConnection(settings.db_url)
         try:
-            return format_jobs_list(fetch_jobs(db, settings, limit=limit))
+            jobs = fetch_jobs(db, settings, limit=limit, status=status, spider=spider)
+            return format_jobs_list(jobs)
         except IngestConnectionError:
             raise
         finally:
             db.close()
 
     with _with_search(settings) as client:
-        return format_jobs_list(fetch_jobs_search(client, settings, limit=limit))
+        jobs = fetch_jobs_search(
+            client, settings, limit=limit, status=status, spider=spider
+        )
+        return format_jobs_list(jobs)

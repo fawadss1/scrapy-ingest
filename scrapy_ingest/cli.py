@@ -153,7 +153,15 @@ def run_check_config(db_url=None, search_url=None, use_spinner=True):
     return ok, rows
 
 
-def run_jobs_show(job_id=None, db_url=None, search_url=None, limit=50, use_spinner=True):
+def run_jobs_show(
+    job_id=None,
+    db_url=None,
+    search_url=None,
+    limit=50,
+    status=None,
+    spider=None,
+    use_spinner=True,
+):
     """Load job(s) from SQL or search; return ``(job, report, error)``."""
     run, finish = _steps(use_spinner)
     try:
@@ -172,7 +180,10 @@ def run_jobs_show(job_id=None, db_url=None, search_url=None, limit=50, use_spinn
         loader = lambda: load_job_report(settings, job_id)
     else:
         label = "Loading jobs"
-        loader = lambda: (None, load_jobs_list(settings, limit=limit))
+        loader = lambda: (
+            None,
+            load_jobs_list(settings, limit=limit, status=status, spider=spider),
+        )
 
     try:
         job, report = run(label, loader)
@@ -189,7 +200,12 @@ def run_jobs_show(job_id=None, db_url=None, search_url=None, limit=50, use_spinn
 
 def jobs_show_command(args):
     _, report, error = run_jobs_show(
-        args.job_id, db_url=args.db_url, search_url=args.search_url, limit=args.limit
+        args.job_id,
+        db_url=args.db_url,
+        search_url=args.search_url,
+        limit=args.limit,
+        status=args.status,
+        spider=args.spider,
     )
     if error:
         info(f"scrapy-ingest jobs show: {error}")
@@ -233,6 +249,14 @@ def main(argv=None):
         type=int,
         default=50,
         help="Max jobs to list when job_id is omitted (default: 50)",
+    )
+    show.add_argument(
+        "--status",
+        help="Filter listed jobs by status (list mode only, e.g. running, finished)",
+    )
+    show.add_argument(
+        "--spider",
+        help="Filter listed jobs by spider name (list mode only)",
     )
     show.set_defaults(func=jobs_show_command)
 
