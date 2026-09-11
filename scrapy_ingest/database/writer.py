@@ -1,5 +1,6 @@
 """Flush collector batches into PostgreSQL or MySQL tables."""
 from ..exceptions import DatabaseError
+from ..utils.metrics import compute_errors_count, sql_standalone_log_errors_clause
 from ..utils.serialization import serialize_item_data
 from ..utils.time import get_current_datetime
 
@@ -96,15 +97,15 @@ class DbWriter:
         success = self._count(self.settings.db_requests_table, job_id, "AND success IS TRUE")
         failed = self._count(self.settings.db_requests_table, job_id, "AND success IS FALSE")
         logs = self._count(self.settings.db_logs_table, job_id)
-        log_errors = self._count(
-            self.settings.db_logs_table, job_id, "AND level IN ('ERROR', 'CRITICAL')"
+        standalone_log_errors = self._count(
+            self.settings.db_logs_table, job_id, sql_standalone_log_errors_clause()
         )
         return {
             "items_count": items,
             "requests_count": requests,
             "success_requests": success,
             "failed_requests": failed,
-            "errors_count": failed + log_errors,
+            "errors_count": compute_errors_count(failed, standalone_log_errors),
             "logs_count": logs,
         }
 

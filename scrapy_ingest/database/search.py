@@ -9,6 +9,7 @@ from opensearchpy.exceptions import NotFoundError, OpenSearchWarning
 from opensearchpy.helpers import bulk as os_bulk
 
 from ..exceptions import IngestConnectionError
+from ..utils.metrics import compute_errors_count, count_standalone_log_errors
 from ..utils.serialization import json_safe
 from ..utils.time import get_current_datetime
 
@@ -107,6 +108,7 @@ class SearchWriter:
             "logs_count": 0,
             "errors_count": 0,
         }
+        self._standalone_log_errors = 0
         self._started_at = None
 
     def _index(self, table):
@@ -121,6 +123,7 @@ class SearchWriter:
     def start_job(self, job_key, spider):
         self._started_at = get_current_datetime(self.settings)
         self._counts = {key: 0 for key in self._counts}
+        self._standalone_log_errors = 0
         self.client.index(
             self._index(self.settings.db_jobs_table),
             job_key,
@@ -175,11 +178,12 @@ class SearchWriter:
         self._counts["failed_requests"] += sum(
             1 for req in requests if req.get("success") is False
         )
-        log_errors = sum(
-            1 for entry in logs if entry.get("level") in ("ERROR", "CRITICAL")
-        )
         self._counts["logs_count"] += len(logs)
-        self._counts["errors_count"] = self._counts["failed_requests"] + log_errors
+        self._standalone_log_errors += count_standalone_log_errors(logs)
+        self._counts["errors_count"] = compute_errors_count(
+            self._counts["failed_requests"],
+            self._standalone_log_errors,
+        )
         self._save_job(job_key)
 
     def _elapsed(self, end_time=None):
