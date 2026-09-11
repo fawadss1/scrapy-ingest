@@ -79,6 +79,36 @@ class TestSearchWriter:
         assert writer._counts["requests_count"] == 1
         assert writer._counts["logs_count"] == 1
 
+    def test_errors_count_skips_duplicate_scraper_log(self):
+        settings = _settings(
+            SEARCH_URL="http://localhost:9200",
+            SEARCH_INDEX_PREFIX="ingest",
+        )
+        client = MagicMock()
+        writer = SearchWriter(client, settings)
+        writer._started_at = datetime.now(timezone.utc)
+        writer.write(
+            {
+                "requests": [
+                    {
+                        "url": "https://example.com",
+                        "success": False,
+                        "error": "NameError: x",
+                    }
+                ],
+                "logs": [
+                    {
+                        "level": "ERROR",
+                        "logger": "scrapy.core.scraper",
+                        "message": "Spider error processing",
+                    }
+                ],
+            },
+            "job-1",
+        )
+        assert writer._counts["failed_requests"] == 1
+        assert writer._counts["errors_count"] == 1
+
 
 class TestSearchClient:
     def test_connects_with_auth_and_bulk(self):
