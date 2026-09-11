@@ -56,7 +56,7 @@ class TestFormatJobShow:
 class TestFormatJobsList:
     def test_formats_multiple_jobs(self):
         text = format_jobs_list([_LIST_JOB])
-        assert "[scrapy-ingest] jobs" in text
+        assert "[scrapy-ingest]" not in text
         assert "spider-123" in text and "| spider " in text
 
     def test_empty_list(self):
@@ -100,7 +100,9 @@ class TestLoadJobsList:
         text = load_jobs_list(settings)
         assert "spider-123" in text
         search_ctx.return_value.__enter__.assert_called_once()
-        _fetch.assert_called_once_with(client, settings, limit=50)
+        _fetch.assert_called_once_with(
+            client, settings, limit=50, status=None, spider=None
+        )
 
 
 class TestFetchJob:
@@ -129,6 +131,23 @@ class TestFetchJobs:
         assert len(jobs) == 1 and jobs[0]["job_id"] == "spider-123"
         assert "LIMIT %s" in cur.execute.call_args[0][0]
 
+    def test_applies_status_and_spider_filters(self):
+        db = MagicMock()
+        cur = MagicMock()
+        cur.fetchall.return_value = []
+        db.cursor.return_value.__enter__ = MagicMock(return_value=cur)
+        db.cursor.return_value.__exit__ = MagicMock(return_value=False)
+        fetch_jobs(
+            db,
+            MagicMock(db_jobs_table="jobs"),
+            limit=5,
+            status="running",
+            spider="Rs_Spider",
+        )
+        sql, params = cur.execute.call_args[0]
+        assert "status = %s" in sql and "spider_name = %s" in sql
+        assert params == ("running", "Rs_Spider", 5)
+
 
 class TestRunJobsShow:
     @patch("scrapy_ingest.cli.load_job_report", return_value=({"job_id": "j1"}, "report"))
@@ -142,9 +161,16 @@ class TestRunJobsShow:
     @patch("scrapy_ingest.cli._load_crawler_settings")
     def test_lists_jobs_when_no_job_id(self, load_settings, load_list):
         load_settings.return_value = _settings(DB_URL="postgresql://localhost/db")
-        job, report, error = run_jobs_show(use_spinner=False)
+        job, report, error = run_jobs_show(
+            use_spinner=False, status="running", spider="Rs_Spider"
+        )
         assert error is None and job is None and report == "jobs list"
         load_list.assert_called_once()
+        assert load_list.call_args.kwargs == {
+            "limit": 50,
+            "status": "running",
+            "spider": "Rs_Spider",
+        }
 
     @patch("scrapy_ingest.cli.load_job_report", return_value=(None, ""))
     @patch("scrapy_ingest.cli._load_crawler_settings")

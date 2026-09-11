@@ -186,3 +186,16 @@ class TestSearchClient:
             client = SearchClient(settings)
             docs = client.search_documents("ingest-jobs", size=5)
         assert docs == [{"job_id": "j1", "status": "finished"}]
+
+    def test_search_documents_applies_filters(self):
+        settings = _settings(SEARCH_URL="http://localhost:9200")
+        mock_client = MagicMock()
+        mock_client.search.return_value = {"hits": {"hits": []}}
+
+        filters = ({"term": {"status": "running"}}, {"term": {"spider_name": "Rs_Spider"}})
+        with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
+            client = SearchClient(settings)
+            client.search_documents("ingest-jobs", size=5, filters=filters)
+
+        body = mock_client.search.call_args.kwargs["body"]
+        assert body["query"] == {"bool": {"filter": list(filters)}}
