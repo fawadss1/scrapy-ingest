@@ -38,26 +38,19 @@ For clusters that require login:
 Indexes created
 ---------------
 
-By default, documents go into these indexes (prefix ``ingest``):
+By default, index names match SQL table names:
 
 +----------------------+---------------------------------------------------+
 | Index                | Documents                                         |
 +======================+===================================================+
-| ``ingest-jobs``      | Job status, counts, elapsed time, Scrapy stats    |
+| ``ingest_jobs``      | Job status, counts, elapsed time, Scrapy stats    |
 +----------------------+---------------------------------------------------+
-| ``ingest-job_items`` | Scraped items (JSON)                              |
+| ``ingest_items``     | Scraped items (JSON)                              |
 +----------------------+---------------------------------------------------+
-| ``ingest-job_requests`` | Requests with url, fingerprint, parent_url   |
+| ``ingest_requests``  | Requests with url, fingerprint, parent_url        |
 +----------------------+---------------------------------------------------+
-| ``ingest-job_logs``  | Log lines (level, logger, message, exception)     |
+| ``ingest_logs``      | Log lines (level, logger, message, exception)     |
 +----------------------+---------------------------------------------------+
-
-Custom prefix:
-
-.. code-block:: python
-
-   SEARCH_INDEX_PREFIX = 'production'
-   # → production-jobs, production-job_items, ...
 
 Verify in Kibana / OpenSearch Dashboards
 ------------------------------------------
@@ -66,14 +59,14 @@ After a crawl, search for documents by ``job_id``:
 
 .. code-block:: text
 
-   GET ingest-jobs/_search
-   GET ingest-job_items/_search?q=job_id:Rs_Spider-*
+   GET ingest_jobs/_search
+   GET ingest_items/_search?q=job_id:Rs_Spider-*
 
 Or use Dev Tools in Kibana:
 
 .. code-block:: json
 
-   GET ingest-job_items/_search
+   GET ingest_items/_search
    {
      "query": { "match_all": {} },
      "size": 10

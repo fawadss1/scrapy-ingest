@@ -64,13 +64,13 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 **Database** — tables created when ``CREATE_TABLES = True``:
 
 - ``jobs`` — per-crawl summary (counts, crawl speed, finish reason, stats)
-- ``job_items`` — JSON items (with ``crawled_at``)
-- ``job_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success (errors include HTTP 4xx/5xx and spider callback failures)
-- ``job_logs`` — structured job logs including ``print()``
+- ``ingest_items`` — JSON items (with ``crawled_at``)
+- ``ingest_requests`` — url, ``parent_url``, status, ``response_time_secs``, error, success (errors include HTTP 4xx/5xx and spider callback failures)
+- ``ingest_logs`` — structured job logs including ``print()``
 
 **Elasticsearch / OpenSearch** — indexes created on first flush (default prefix ``ingest``):
 
-- ``ingest-jobs``, ``ingest-job_items``, ``ingest-job_requests``, ``ingest-job_logs``
+- ``ingest_jobs``, ``ingest_items``, ``ingest_requests``, ``ingest_logs`` (same names as SQL tables)
 
 When the spider closes, a crawl summary is printed to stderr with job id, destinations, counts, and elapsed time. List or re-print job data later:
 

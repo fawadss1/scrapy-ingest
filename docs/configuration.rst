@@ -81,20 +81,14 @@ Set ``SEARCH_URL`` to enable Elasticsearch or OpenSearch ingest. Connections use
 
 **Index naming:**
 
-Indexes are named ``{SEARCH_INDEX_PREFIX}-{table}``. Default prefix is ``ingest``:
+Elasticsearch/OpenSearch index names match SQL table names by default:
 
-- ``ingest-jobs``
-- ``ingest-job_items``
-- ``ingest-job_requests``
-- ``ingest-job_logs``
+- ``ingest_jobs``
+- ``ingest_items``
+- ``ingest_requests``
+- ``ingest_logs``
 
-Override the prefix:
-
-.. code-block:: python
-
-   SEARCH_INDEX_PREFIX = 'my_crawl'
-
-The suffix comes from ``JOBS_TABLE``, ``ITEMS_TABLE``, ``REQUESTS_TABLE``, and ``LOGS_TABLE`` (same defaults as SQL table names).
+Override names with ``JOBS_TABLE``, ``ITEMS_TABLE``, ``REQUESTS_TABLE``, and ``LOGS_TABLE`` (same setting for SQL and search).
 
 Optional settings
 -----------------
@@ -111,25 +105,25 @@ Optional settings
 Table and index names
 ---------------------
 
-SQL table names also define the suffix part of Elasticsearch/OpenSearch index names.
+The same names are used for SQL tables and Elasticsearch/OpenSearch indexes.
 
 .. code-block:: python
 
    # Defaults
-   # ITEMS_TABLE = 'job_items'
-   # REQUESTS_TABLE = 'job_requests'
-   # LOGS_TABLE = 'job_logs'
-   # JOBS_TABLE = 'jobs'
+   # JOBS_TABLE = 'ingest_jobs'
+   # ITEMS_TABLE = 'ingest_items'
+   # REQUESTS_TABLE = 'ingest_requests'
+   # LOGS_TABLE = 'ingest_logs'
 
 What gets stored
 ----------------
 
 **Relational database**
 
-- ``jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats). ``errors_count`` counts failed requests plus standalone ERROR/CRITICAL logs (not duplicate ``scrapy.core.scraper`` logs for the same request failure).
-- ``job_items`` — JSON items with ``crawled_at``
-- ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success. The ``error`` column is set for download failures, HTTP 4xx/5xx (for example ``HTTP 404 Not Found``), and spider callback exceptions (full traceback linked to the request URL).
-- ``job_logs`` — time, logger, level, message, exception
+- ``ingest_jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats). ``errors_count`` counts failed requests plus standalone ERROR/CRITICAL logs (not duplicate ``scrapy.core.scraper`` logs for the same request failure).
+- ``ingest_items`` — JSON items with ``crawled_at``
+- ``ingest_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success. The ``error`` column is set for download failures, HTTP 4xx/5xx (for example ``HTTP 404 Not Found``), and spider callback exceptions (full traceback linked to the request URL).
+- ``ingest_logs`` — time, logger, level, message, exception
 
 **Elasticsearch / OpenSearch**
 
@@ -138,7 +132,7 @@ Same data as JSON documents. Each document includes the string ``job_id``. Elast
 Logging and summary
 -------------------
 
-Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``job_logs`` (or ``ingest-job_logs`` when Elasticsearch/OpenSearch is configured).
+Log level follows Scrapy ``LOG_LEVEL``. Startup logs, Scrapy/Twisted lines, exceptions, and ``print()`` output are stored in ``ingest_logs``.
 
 When the spider closes, a crawl summary is printed to stderr (independent of ``LOG_LEVEL``) with job id, spider, database URL, Elasticsearch/OpenSearch URL, tables/indexes, counts, and elapsed time. Set ``INGEST_SHOW_SUMMARY = False`` to hide it.
 
@@ -178,7 +172,7 @@ Tips
 
 - Run ``scrapy-ingest check-config`` from your Scrapy project to validate ``DB_URL`` / ``SEARCH_URL`` and ping each configured destination before crawling.
 - After a crawl, run ``scrapy-ingest jobs show`` (optionally ``--status finished --spider my_spider``) to pick a job id, then ``scrapy-ingest jobs show <job_id>`` for full counts without writing SQL.
-- Search-only setup (``SEARCH_URL`` without ``DB_URL``)? ``jobs show`` reads from the ``ingest-jobs`` index (or your ``SEARCH_INDEX_PREFIX`` + ``JOBS_TABLE`` name).
+- Search-only setup (``SEARCH_URL`` without ``DB_URL``)? ``jobs show`` reads from the ``ingest_jobs`` index (or your customized ``JOBS_TABLE``).
 - Password has ``@`` or ``$``? If using ``DB_URL``, encode them: ``@`` -> ``%40``, ``$`` -> ``%24``.
 - Prefer discrete ``DB_*`` fields to avoid URL encoding.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.

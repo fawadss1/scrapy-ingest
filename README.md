@@ -110,23 +110,16 @@ SEARCH_PASSWORD = "secret"
 SEARCH_SSL_VERIFY = True   # set False only for self-signed certs in dev
 ```
 
-**Index names** use the prefix `ingest` by default:
+**Index names** match SQL table names by default:
 
-| Index                 | Contents                                              |
+| Table / index         | Contents                                              |
 |-----------------------|-------------------------------------------------------|
-| `ingest-jobs`         | Job metadata: status, counts, elapsed time, stats     |
-| `ingest-job_items`    | Scraped items as JSON documents                       |
-| `ingest-job_requests` | Requests: url, fingerprint, parent_url, status, error |
-| `ingest-job_logs`     | Log lines: level, logger, message, exception          |
+| `ingest_jobs`         | Job metadata: status, counts, elapsed time, stats     |
+| `ingest_items`        | Scraped items as JSON documents                       |
+| `ingest_requests`     | Requests: url, fingerprint, parent_url, status, error |
+| `ingest_logs`         | Log lines: level, logger, message, exception          |
 
-Override the prefix:
-
-```python
-SEARCH_INDEX_PREFIX = "my_crawl"
-# → my_crawl-jobs, my_crawl-job_items, ...
-```
-
-Table name settings (`JOBS_TABLE`, `ITEMS_TABLE`, etc.) also apply as the suffix part of index names.
+Override table/index names with `JOBS_TABLE`, `ITEMS_TABLE`, `REQUESTS_TABLE`, and `LOGS_TABLE` (same setting for SQL and Elasticsearch/OpenSearch).
 
 Indexes are created on first write if they do not exist.
 
@@ -134,12 +127,12 @@ Indexes are created on first write if they do not exist.
 
 ### Relational database (Postgres / MySQL)
 
-| Table          | Contents                                                                                                                                                                                                                                                      |
-|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats. `errors_count` = failed requests + standalone ERROR/CRITICAL logs (not double-counted from `scrapy.core.scraper` when the request is already failed) |
-| `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                                                                                                                                                                               |
-| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success (download errors, HTTP 4xx/5xx, spider callback tracebacks)                                                                                                               |
-| `job_logs`     | time, logger, level, message, exception                                                                                                                                                                                                                       |
+| Table             | Contents                                                                                                                                                                                                                                                      |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ingest_jobs`     | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats. `errors_count` = failed requests + standalone ERROR/CRITICAL logs (not double-counted from `scrapy.core.scraper` when the request is already failed) |
+| `ingest_items`    | JSON items (`crawled_at` added). `job_id` = `ingest_jobs.id` (CASCADE)                                                                                                                                                                                        |
+| `ingest_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success (download errors, HTTP 4xx/5xx, spider callback tracebacks)                                                                                                               |
+| `ingest_logs`     | time, logger, level, message, exception                                                                                                                                                                                                                       |
 
 Request `parent_url` is the page that scheduled the request (e.g. sitemap → product). Start URLs are `null`. The request `fingerprint` is a SHA1 hash of method + canonical URL for parent lookup.
 
@@ -205,14 +198,13 @@ See [CLI docs](https://scrapy-ingest.readthedocs.io/en/latest/cli.html) for deta
 | `DB_URL` / `DB_*`                                           | —              | Database connection (enables SQL ingest)                    |
 | `SEARCH_URL`                                                | —              | Elasticsearch or OpenSearch URL (enables indexing)          |
 | `SEARCH_USER` / `SEARCH_PASSWORD`                           | —              | HTTP basic auth for Elasticsearch/OpenSearch (optional)     |
-| `SEARCH_INDEX_PREFIX`                                       | `ingest`       | Prefix for index names                                      |
 | `SEARCH_SSL_VERIFY`                                         | `True`         | Verify HTTPS certificates                                   |
 | `CREATE_TABLES`                                             | `True`         | Auto-create SQL tables on startup                           |
 | `INGEST_BATCH_SIZE`                                         | `50`           | Flush when this many rows are buffered                      |
 | `INGEST_FLUSH_INTERVAL`                                     | `10`           | Periodic flush in seconds                                   |
 | `INGEST_SHOW_SUMMARY`                                       | `True`         | Print crawl summary when the spider closes                  |
 | `DB_TYPE`                                                   | `postgres`     | `postgres` / `mysql` / `mariadb` for discrete `DB_*` fields |
-| `ITEMS_TABLE`, `REQUESTS_TABLE`, `LOGS_TABLE`, `JOBS_TABLE` | see defaults   | Override SQL table / index suffix names                     |
+| `ITEMS_TABLE`, `REQUESTS_TABLE`, `LOGS_TABLE`, `JOBS_TABLE` | see defaults   | Override SQL table and index names (same value for both)    |
 | `TIMEZONE`                                                  | `Asia/Karachi` | Timezone for `created_at`                                   |
 | `JOB_ID`                                                    | auto           | Omit to auto-generate (`Rs_Spider-178826754-a1b2`)          |
 

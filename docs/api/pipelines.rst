@@ -38,7 +38,7 @@ Base class
 
 Notes
 -----
-- Tables: `jobs`, `job_items`, `job_requests`, `job_logs` (created when `CREATE_TABLES = True`).
+- Tables: `ingest_jobs`, `ingest_items`, `ingest_requests`, `ingest_logs` (created when `CREATE_TABLES = True`).
 - `IngestPipeline` auto-enables requests, logs, stats, parent_url, and error logging.
 - Configure SQL via `DB_URL` or discrete fields; configure search via `SEARCH_URL`.
 - See `configuration` for all settings.

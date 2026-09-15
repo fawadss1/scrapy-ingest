@@ -21,7 +21,7 @@ Notes
 -----
 - Configure DB via `DB_URL` or discrete fields (`DB_TYPE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
 - `DB_TYPE` defaults to `postgres` (aliases: `postgresql`). MySQL: `mysql` / `mariadb`.
-- Default tables: `jobs`, `job_items`, `job_requests`, `job_logs`.
+- Default tables: `ingest_jobs`, `ingest_items`, `ingest_requests`, `ingest_logs` (same names for Elasticsearch/OpenSearch indexes).
 - See `configuration` and `quickstart` for practical examples.
 
       :type: dict
