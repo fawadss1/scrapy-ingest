@@ -10,16 +10,15 @@ class Settings:
     database table names, and other operational parameters defined in crawler settings.
     """
 
-    DEFAULT_ITEMS_TABLE = "job_items"
-    DEFAULT_REQUESTS_TABLE = "job_requests"
-    DEFAULT_LOGS_TABLE = "job_logs"
-    DEFAULT_JOBS_TABLE = "jobs"
+    DEFAULT_ITEMS_TABLE = "ingest_items"
+    DEFAULT_REQUESTS_TABLE = "ingest_requests"
+    DEFAULT_LOGS_TABLE = "ingest_logs"
+    DEFAULT_JOBS_TABLE = "ingest_jobs"
     DEFAULT_DB_TYPE = "postgres"
     DEFAULT_TIMEZONE = "Asia/Karachi"
     DEFAULT_BATCH_SIZE = 50
     DEFAULT_FLUSH_INTERVAL = 10.0
     DEFAULT_SHOW_SUMMARY = True
-    DEFAULT_SEARCH_INDEX_PREFIX = "ingest"
     _DB_SCHEMES = {
         "postgres": "postgresql",
         "postgresql": "postgresql",
@@ -151,12 +150,6 @@ class Settings:
     @property
     def search_password(self):
         return self.crawler_settings.get("SEARCH_PASSWORD")
-
-    @property
-    def search_index_prefix(self):
-        return self.crawler_settings.get(
-            "SEARCH_INDEX_PREFIX", self.DEFAULT_SEARCH_INDEX_PREFIX
-        )
 
     @property
     def search_ssl_verify(self):

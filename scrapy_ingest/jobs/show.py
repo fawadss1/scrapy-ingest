@@ -58,7 +58,7 @@ def _normalize_job(doc, keys):
 
 
 def _jobs_index(settings):
-    return f"{settings.search_index_prefix}-{settings.db_jobs_table}"
+    return settings.db_jobs_table
 
 
 def _require_destination(settings):

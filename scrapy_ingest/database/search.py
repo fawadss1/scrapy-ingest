@@ -117,7 +117,7 @@ class SearchWriter:
         self._status = "running"
 
     def _index(self, table):
-        return f"{self.settings.search_index_prefix}-{table}"
+        return table
 
     @staticmethod
     def _iso(value):

@@ -130,7 +130,7 @@ def run_check_config(db_url=None, search_url=None, use_spinner=True):
                     "Search ping",
                     lambda: _ping_search(settings),
                     "cluster responded",
-                    ("indexes", settings.search_index_prefix),
+                    ("indexes", settings.db_jobs_table),
             ),
     ):
         if not enabled:

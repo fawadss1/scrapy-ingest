@@ -23,10 +23,10 @@ def display_database(url):
 
 def format_crawl_summary(summary):
     """Return a tabular crawl recap from finalized job metrics."""
-    jobs_table = summary.get("jobs_table") or "jobs"
-    items_table = summary.get("items_table") or "job_items"
-    requests_table = summary.get("requests_table") or "job_requests"
-    logs_table = summary.get("logs_table") or "job_logs"
+    jobs_table = summary.get("jobs_table") or "ingest_jobs"
+    items_table = summary.get("items_table") or "ingest_items"
+    requests_table = summary.get("requests_table") or "ingest_requests"
+    logs_table = summary.get("logs_table") or "ingest_logs"
     elapsed = summary.get("elapsed_seconds", 0)
     rate = summary.get("items_per_min", 0)
     crawl = format_table(
