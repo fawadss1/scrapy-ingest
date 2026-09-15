@@ -4,16 +4,57 @@ Changelog
 [Unreleased]
 ------------
 
+[1.5.0] - 2026-09-15
+--------------------
+
+Second stable release. Unified SQL table and Elasticsearch/OpenSearch index naming; pipeline renamed to ``IngestPipeline``.
+
 ### Added
-- ``IngestPipeline`` — pipeline name for full crawl ingest (SQL and/or Elasticsearch/OpenSearch); replaces ``DbInsertPipeline``.
+- ``IngestPipeline`` — primary pipeline for full crawl ingest (SQL and/or Elasticsearch/OpenSearch).
 - ``jobs show`` list filters: ``--status`` and ``--spider`` (list mode only; SQL and Elasticsearch/OpenSearch).
-- ``job_requests.response_size_bytes`` — comma-formatted downloaded body size (for example ``117,001``) in SQL and Elasticsearch/OpenSearch. Existing SQL tables need ``ALTER TABLE job_requests ADD COLUMN response_size_bytes VARCHAR(32);`` (adjust table name if customized).
+- ``ingest_requests.response_size_bytes`` — comma-formatted downloaded body size (for example ``117,001``) in SQL and Elasticsearch/OpenSearch.
 
 ### Fixed
 - ``errors_count`` no longer double-counts spider callback failures. ERROR logs from ``scrapy.core.scraper`` are excluded when the request is already counted in ``failed_requests``. Standalone ERROR/CRITICAL logs (for example pipeline errors) still increment the total. Applies to SQL and Elasticsearch/OpenSearch job metrics.
+- Elasticsearch/OpenSearch job documents keep ``spider_name`` and ``status`` after batch flushes; full-document re-index had been dropping fields set at job start.
 
 ### Changed
+- **Breaking:** default SQL table and Elasticsearch/OpenSearch index names are now ``ingest_jobs``, ``ingest_items``, ``ingest_requests``, and ``ingest_logs`` (one name for SQL and search). Index names no longer use a separate ``ingest-`` hyphen prefix.
+- **Breaking:** update ``ITEM_PIPELINES`` from ``scrapy_ingest.pipelines.DbInsertPipeline`` to ``scrapy_ingest.pipelines.IngestPipeline`` (or entry point ``ingest``).
 - ``jobs show`` list mode prints the table only (removed the ``[scrapy-ingest] jobs`` header line).
+- PyPI trove classifier is **Production/Stable**.
+
+### Removed
+- ``DbInsertPipeline`` (use ``IngestPipeline``).
+- ``SEARCH_INDEX_PREFIX`` (customize ``JOBS_TABLE``, ``ITEMS_TABLE``, ``REQUESTS_TABLE``, and ``LOGS_TABLE`` instead).
+- ``db_ingest`` Scrapy pipeline entry point (use ``ingest``).
+
+### Upgrade notes (1.4.x → 1.5.0)
+
+**Settings** — minimal migration:
+
+.. code-block:: python
+
+   ITEM_PIPELINES = {
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
+   }
+
+**Keep old table/index names** (optional):
+
+.. code-block:: python
+
+   JOBS_TABLE = 'jobs'
+   ITEMS_TABLE = 'job_items'
+   REQUESTS_TABLE = 'job_requests'
+   LOGS_TABLE = 'job_logs'
+
+**Existing SQL** — add response size column (adjust table name if customized):
+
+.. code-block:: sql
+
+   ALTER TABLE ingest_requests ADD COLUMN response_size_bytes VARCHAR(32);
+
+**Elasticsearch/OpenSearch** — re-crawl or re-index into the new ``ingest_*`` indexes; old ``ingest-jobs`` / ``ingest-job_*`` indexes are not read automatically.
 
 [1.4.0] - 2026-09-10
 --------------------
