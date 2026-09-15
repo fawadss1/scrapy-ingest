@@ -16,7 +16,7 @@ Only the item pipeline is required. It auto-enables requests, logs, stats, ``par
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
 Ingest destination

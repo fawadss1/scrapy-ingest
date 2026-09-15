@@ -8,10 +8,10 @@ Minimal, auto-generated API docs for pipelines. See README/Quickstart for usage.
 Main pipelines
 --------------
 
-DbInsertPipeline
-~~~~~~~~~~~~~~~~
+IngestPipeline
+~~~~~~~~~~~~~~
 
-.. autoclass:: DbInsertPipeline
+.. autoclass:: IngestPipeline
    :members:
    :show-inheritance:
 
@@ -39,6 +39,6 @@ Base class
 Notes
 -----
 - Tables: `jobs`, `job_items`, `job_requests`, `job_logs` (created when `CREATE_TABLES = True`).
-- `DbInsertPipeline` auto-enables requests, logs, stats, parent_url, and error logging.
-- Configure DB via `DB_URL` or discrete fields (`DB_HOST`, `DB_USER`, etc.).
+- `IngestPipeline` auto-enables requests, logs, stats, parent_url, and error logging.
+- Configure SQL via `DB_URL` or discrete fields; configure search via `SEARCH_URL`.
 - See `configuration` for all settings.

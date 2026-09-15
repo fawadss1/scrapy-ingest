@@ -34,7 +34,7 @@ Database-only:
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    DB_URL = "postgresql://user:password@localhost:5432/database"
@@ -44,7 +44,7 @@ Elasticsearch / OpenSearch only:
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    SEARCH_URL = "http://localhost:9200"

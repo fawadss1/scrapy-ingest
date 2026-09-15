@@ -18,7 +18,7 @@ Only the item pipeline is required:
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    # Either one URL

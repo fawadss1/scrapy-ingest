@@ -25,7 +25,7 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    DB_URL = 'postgresql://user:password@localhost:5432/database'
@@ -38,7 +38,7 @@ Only the item pipeline is required — requests, logs, stats, ``parent_url``, an
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    SEARCH_URL = 'http://localhost:9200'

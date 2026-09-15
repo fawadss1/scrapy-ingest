@@ -289,7 +289,7 @@ Settings Configuration
 
    # Pipeline configuration
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    # Extension configuration
@@ -501,7 +501,7 @@ Settings for News Scraper
    # Pipelines
    ITEM_PIPELINES = {
        'news_scraper.pipelines.ArticleValidationPipeline': 200,
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    EXTENSIONS = {

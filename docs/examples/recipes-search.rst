@@ -11,7 +11,7 @@ Enable Elasticsearch / OpenSearch
 .. code-block:: python
 
    ITEM_PIPELINES = {
-       'scrapy_ingest.pipelines.DbInsertPipeline': 300,
+       'scrapy_ingest.pipelines.IngestPipeline': 300,
    }
 
    SEARCH_URL = 'http://localhost:9200'

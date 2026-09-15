@@ -6,7 +6,7 @@ Store full job logs (startup → closed, plus ``print()``) in ``job_logs``.
 1) Enable (settings.py)
 -----------------------
 
-Logs are included automatically when you use ``DbInsertPipeline``. For logs only:
+Logs are included automatically when you use ``IngestPipeline``. For logs only:
 
 .. code-block:: python
 
@@ -45,4 +45,4 @@ Tips
 ----
 
 - Keep discrete DB fields if your password has special characters.
-- Prefer ``DbInsertPipeline`` so items, requests, and stats are stored too.
+- Prefer ``IngestPipeline`` so items, requests, and stats are stored too.

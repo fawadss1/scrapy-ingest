@@ -23,7 +23,7 @@ Notes
 -----
 - `LoggingExtension` persists full job logs (startup → closed, plus ``print()``) to `job_logs`.
 - `StatsExtension` stores Scrapy crawl stats on `jobs.stats` when the spider closes.
-- Both are auto-enabled by `DbInsertPipeline`. Log level follows Scrapy ``LOG_LEVEL``.
+- Both are auto-enabled by `IngestPipeline`. Log level follows Scrapy ``LOG_LEVEL``.
 - See `configuration` for settings and Quickstart/Examples for usage.
 
       Called when an item is dropped by a pipeline.

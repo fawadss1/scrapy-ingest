@@ -49,4 +49,4 @@ Expected
 Tip
 ---
 
-Prefer ``DbInsertPipeline`` if you also want items, logs, and stats. It enables this automatically.
+Prefer ``IngestPipeline`` if you also want items, logs, and stats. It enables this automatically.

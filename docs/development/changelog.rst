@@ -5,6 +5,7 @@ Changelog
 ------------
 
 ### Added
+- ``IngestPipeline`` — pipeline name for full crawl ingest (SQL and/or Elasticsearch/OpenSearch); replaces ``DbInsertPipeline``.
 - ``jobs show`` list filters: ``--status`` and ``--spider`` (list mode only; SQL and Elasticsearch/OpenSearch).
 - ``job_requests.response_size_bytes`` — comma-formatted downloaded body size (for example ``117,001``) in SQL and Elasticsearch/OpenSearch. Existing SQL tables need ``ALTER TABLE job_requests ADD COLUMN response_size_bytes VARCHAR(32);`` (adjust table name if customized).
 

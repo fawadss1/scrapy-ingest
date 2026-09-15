@@ -297,7 +297,7 @@ Writing Tests
 
    import pytest
    import psycopg2
-   from scrapy_ingest.pipelines.main import DbInsertPipeline
+   from scrapy_ingest.pipelines.main import IngestPipeline
 
 
    @pytest.mark.integration
@@ -320,7 +320,7 @@ Writing Tests
                'JOB_ID': 'integration_test'
            }
 
-           pipeline = DbInsertPipeline(settings)
+           pipeline = IngestPipeline(settings)
            spider = Mock()
            spider.name = 'test_spider'
 
