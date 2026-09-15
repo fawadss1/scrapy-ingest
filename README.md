@@ -134,12 +134,12 @@ Indexes are created on first write if they do not exist.
 
 ### Relational database (Postgres / MySQL)
 
-| Table          | Contents                                                                                                                                        |
-|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats                                         |
-| `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                                                                 |
-| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success (download errors, HTTP 4xx/5xx, spider callback tracebacks) |
-| `job_logs`     | time, logger, level, message, exception                                                                                                         |
+| Table          | Contents                                                                                                                                                                                                                                                      |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jobs`         | One row per crawl: `id`, unique `job_id` string, spider, status, start/finish, counts, items/min, stats. `errors_count` = failed requests + standalone ERROR/CRITICAL logs (not double-counted from `scrapy.core.scraper` when the request is already failed) |
+| `job_items`    | JSON items (`crawled_at` added). `job_id` = `jobs.id` (CASCADE)                                                                                                                                                                                               |
+| `job_requests` | url, parent_url, parent_id, status, response_time_secs, fingerprint, error, success (download errors, HTTP 4xx/5xx, spider callback tracebacks)                                                                                                               |
+| `job_logs`     | time, logger, level, message, exception                                                                                                                                                                                                                       |
 
 Request `parent_url` is the page that scheduled the request (e.g. sitemap → product). Start URLs are `null`. The request `fingerprint` is a SHA1 hash of method + canonical URL for parent lookup.
 
@@ -171,15 +171,20 @@ Shows a spinner per step, prints a summary table to stderr, and exits `0` when a
 
 ### `jobs show`
 
-List recent jobs or print one job summary from the database (requires `DB_URL`):
+List recent jobs or print one job summary from SQL or Elasticsearch/OpenSearch (requires `DB_URL` and/or `SEARCH_URL`). When both are configured, queries use SQL; crawls still dual-write to both.
 
 ```bash
-scrapy-ingest jobs show                              # list recent jobs
-scrapy-ingest jobs show --limit 20                   # list up to 20 jobs
-scrapy-ingest jobs show Rs_Spider-178826754-a1b2      # one job (Field | Value table)
+scrapy-ingest jobs show                                    # list recent jobs
+scrapy-ingest jobs show --limit 20                         # list up to 20 jobs
+scrapy-ingest jobs show --status running                   # filter by status (list mode)
+scrapy-ingest jobs show --spider Rs_Spider                 # filter by spider (list mode)
+scrapy-ingest jobs show Rs_Spider-178826754-a1b2            # one job (Field | Value table)
+scrapy-ingest jobs show --search-url "http://localhost:9200"
 ```
 
-The job id is the string shown in the end-of-crawl summary (or your `JOB_ID` setting). Exit `0` on success; exit `1` if a specific job id is missing or the database is unreachable.
+**List mode** (no job id): table of recent jobs — job id, spider, status, timestamps, counts. **Detail mode** (with job id): Field | Value table from the `jobs` row. `--status` and `--spider` apply in list mode only.
+
+The job id is the string shown in the end-of-crawl summary (or your `JOB_ID` setting). Exit `0` on success (including an empty list); exit `1` if a specific job id is missing or the destination is unreachable.
 
 Typical workflow:
 
@@ -187,6 +192,7 @@ Typical workflow:
 scrapy-ingest check-config
 scrapy crawl your_spider
 scrapy-ingest jobs show
+scrapy-ingest jobs show --status finished --spider your_spider
 scrapy-ingest jobs show <job_id>
 ```
 

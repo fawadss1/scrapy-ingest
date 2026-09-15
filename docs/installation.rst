@@ -57,6 +57,7 @@ Run
    scrapy-ingest check-config
    scrapy crawl your_spider
    scrapy-ingest jobs show
+   scrapy-ingest jobs show --spider your_spider
    scrapy-ingest jobs show <job_id>
 
 Troubleshooting

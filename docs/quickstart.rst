@@ -77,7 +77,11 @@ When the spider closes, a crawl summary is printed to stderr with job id, destin
 .. code-block:: bash
 
    scrapy-ingest jobs show
+   scrapy-ingest jobs show --status running
+   scrapy-ingest jobs show --spider my_spider
    scrapy-ingest jobs show <job_id>
+
+``jobs show`` works with ``DB_URL`` and/or ``SEARCH_URL``. When both are configured, queries use SQL.
 
 See :doc:`cli` for ``check-config`` and ``jobs show`` options.
 

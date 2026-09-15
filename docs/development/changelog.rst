@@ -4,6 +4,16 @@ Changelog
 [Unreleased]
 ------------
 
+### Added
+- ``jobs show`` list filters: ``--status`` and ``--spider`` (list mode only; SQL and Elasticsearch/OpenSearch).
+- ``job_requests.response_size_bytes`` — comma-formatted downloaded body size (for example ``117,001``) in SQL and Elasticsearch/OpenSearch. Existing SQL tables need ``ALTER TABLE job_requests ADD COLUMN response_size_bytes VARCHAR(32);`` (adjust table name if customized).
+
+### Fixed
+- ``errors_count`` no longer double-counts spider callback failures. ERROR logs from ``scrapy.core.scraper`` are excluded when the request is already counted in ``failed_requests``. Standalone ERROR/CRITICAL logs (for example pipeline errors) still increment the total. Applies to SQL and Elasticsearch/OpenSearch job metrics.
+
+### Changed
+- ``jobs show`` list mode prints the table only (removed the ``[scrapy-ingest] jobs`` header line).
+
 [1.4.0] - 2026-09-10
 --------------------
 

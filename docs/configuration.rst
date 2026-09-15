@@ -126,7 +126,7 @@ What gets stored
 
 **Relational database**
 
-- ``jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats)
+- ``jobs`` — per-crawl summary (status, counts, crawl speed, finish reason, stats). ``errors_count`` counts failed requests plus standalone ERROR/CRITICAL logs (not duplicate ``scrapy.core.scraper`` logs for the same request failure).
 - ``job_items`` — JSON items with ``crawled_at``
 - ``job_requests`` — url, ``parent_url``, ``parent_id``, fingerprint, status, ``response_time_secs``, error, success. The ``error`` column is set for download failures, HTTP 4xx/5xx (for example ``HTTP 404 Not Found``), and spider callback exceptions (full traceback linked to the request URL).
 - ``job_logs`` — time, logger, level, message, exception
@@ -167,14 +167,18 @@ CLI
 See :doc:`cli` for full details.
 
 - ``scrapy-ingest check-config`` — validate settings and ping ``DB_URL`` / ``SEARCH_URL`` before crawling
-- ``scrapy-ingest jobs show`` — list recent jobs from the database (newest first)
-- ``scrapy-ingest jobs show <job_id>`` — print one job summary (``jobs`` table columns)
+- ``scrapy-ingest jobs show`` — list recent jobs (newest first) from SQL or Elasticsearch/OpenSearch
+- ``scrapy-ingest jobs show --status running`` / ``--spider my_spider`` — filter the job list (list mode only)
+- ``scrapy-ingest jobs show <job_id>`` — print one job summary as a Field | Value table
+
+When both ``DB_URL`` and ``SEARCH_URL`` are set, ``jobs show`` reads from SQL. Crawls still write to both destinations.
 
 Tips
 ----
 
 - Run ``scrapy-ingest check-config`` from your Scrapy project to validate ``DB_URL`` / ``SEARCH_URL`` and ping each configured destination before crawling.
-- After a crawl, run ``scrapy-ingest jobs show`` to pick a job id, then ``scrapy-ingest jobs show <job_id>`` for full counts without writing SQL.
+- After a crawl, run ``scrapy-ingest jobs show`` (optionally ``--status finished --spider my_spider``) to pick a job id, then ``scrapy-ingest jobs show <job_id>`` for full counts without writing SQL.
+- Search-only setup (``SEARCH_URL`` without ``DB_URL``)? ``jobs show`` reads from the ``ingest-jobs`` index (or your ``SEARCH_INDEX_PREFIX`` + ``JOBS_TABLE`` name).
 - Password has ``@`` or ``$``? If using ``DB_URL``, encode them: ``@`` -> ``%40``, ``$`` -> ``%24``.
 - Prefer discrete ``DB_*`` fields to avoid URL encoding.
 - Request ``parent_url`` is the page that scheduled the request. Start URLs are ``null``.
