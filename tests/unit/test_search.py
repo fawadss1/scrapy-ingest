@@ -69,7 +69,13 @@ class TestSearchWriter:
         writer.write(
             {
                 "items": [{"title": "one"}],
-                "requests": [{"url": "https://example.com", "success": True}],
+                "requests": [
+                    {
+                        "url": "https://example.com",
+                        "success": True,
+                        "response_size_bytes": "347,337",
+                    }
+                ],
                 "logs": [{"level": "INFO", "message": "ok"}],
             },
             "job-1",
@@ -78,6 +84,8 @@ class TestSearchWriter:
         assert writer._counts["items_count"] == 1
         assert writer._counts["requests_count"] == 1
         assert writer._counts["logs_count"] == 1
+        request_docs = client.bulk.call_args_list[1][0][1]
+        assert request_docs[0]["response_size_bytes"] == "347,337"
 
     def test_errors_count_skips_duplicate_scraper_log(self):
         settings = _settings(

@@ -8,7 +8,22 @@ from scrapy_ingest.extensions.request_logger import (
     _format_spider_error,
     _http_error,
     _request_from_spider_error,
+    format_response_size_bytes,
 )
+
+
+class TestResponseSizeBytes:
+    def test_formats_body_size_with_commas(self):
+        assert format_response_size_bytes(MagicMock(body=b"x" * 117001)) == "117,001"
+
+    def test_formats_small_body(self):
+        assert format_response_size_bytes(MagicMock(body=b"hello")) == "5"
+
+    def test_returns_none_without_body(self):
+        assert format_response_size_bytes(MagicMock(body=None, spec=["body"])) is None
+
+    def test_returns_none_without_response(self):
+        assert format_response_size_bytes(None) is None
 
 
 class TestHttpError:
@@ -36,7 +51,7 @@ class TestRequestLoggerHttpErrors:
         request.url = "https://example.com/missing"
         request.method = "GET"
         request.meta = {"start_time": 1.0}
-        response = MagicMock(status=404, reason="Not Found")
+        response = MagicMock(status=404, reason="Not Found", body=b"<html>404</html>")
 
         with patch(
             "scrapy_ingest.extensions.request_logger.get_request_fingerprint",
@@ -53,6 +68,7 @@ class TestRequestLoggerHttpErrors:
         assert row["success"] is False
         assert row["error"] == "HTTP 404 Not Found"
         assert row["status_code"] == 404
+        assert row["response_size_bytes"] == f"{len(b'<html>404</html>'):,}"
 
 
 class TestSpiderErrorHelpers:
@@ -99,7 +115,7 @@ class TestRequestLoggerSpiderError:
         request.url = "https://example.com/item"
         request.method = "GET"
         request.meta = {"start_time": 100.0}
-        response = MagicMock(status=200, request=request)
+        response = MagicMock(status=200, request=request, body=b"parsed page")
 
         with patch(
             "scrapy_ingest.extensions.request_logger.get_request_fingerprint",
@@ -117,6 +133,7 @@ class TestRequestLoggerSpiderError:
         row = self.collector.requests[0]
         assert row["url"] == "https://example.com/item"
         assert row["status_code"] == 200
+        assert row["response_size_bytes"] == f"{len(b'parsed page'):,}"
         assert row["success"] is False
         assert row["error"].startswith("RuntimeError: bad parse")
         assert "Traceback" in row["error"]
