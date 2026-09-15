@@ -9,6 +9,21 @@ from ..utils.fingerprint import get_request_fingerprint
 from ..utils.parent import get_parent_url
 
 
+def _body_size(response):
+    if response is None:
+        return None
+    body = getattr(response, "body", None)
+    return len(body) if body is not None else None
+
+
+def format_response_size_bytes(response):
+    """Return comma-formatted body size (e.g. ``117,001``), or ``None``."""
+    size = _body_size(response)
+    if size is None:
+        return None
+    return f"{size:,}"
+
+
 def _http_error(response):
     """Return an error label for non-2xx HTTP responses, else ``None``."""
     status = int(response.status)
@@ -73,6 +88,7 @@ class RequestLogger:
                 "method": request.method,
                 "status_code": response.status,
                 "response_time_secs": round(time.time() - start, 2),
+                "response_size_bytes": format_response_size_bytes(response),
                 "fingerprint": get_request_fingerprint(request),
                 "error": _http_error(response),
                 "success": success,
@@ -98,6 +114,7 @@ class RequestLogger:
                 "method": request.method,
                 "status_code": status_code,
                 "response_time_secs": round(time.time() - start, 2),
+                "response_size_bytes": format_response_size_bytes(response),
                 "fingerprint": fingerprint,
                 "error": error,
                 "success": False,

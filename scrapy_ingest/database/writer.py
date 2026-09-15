@@ -210,9 +210,9 @@ class DbWriter:
             return
         sql = f"""
         INSERT INTO {self.settings.db_requests_table}
-        (job_id, url, method, status_code, response_time_secs, fingerprint,
+        (job_id, url, method, status_code, response_time_secs, response_size_bytes, fingerprint,
          parent_url, error, success, created_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         rows = [
             (
@@ -221,6 +221,7 @@ class DbWriter:
                 req.get("method"),
                 req.get("status_code"),
                 req.get("response_time_secs"),
+                req.get("response_size_bytes"),
                 req.get("fingerprint"),
                 req.get("parent_url"),
                 req.get("error"),

@@ -70,6 +70,7 @@ class SchemaManager:
             method VARCHAR(10),
             status_code INTEGER,
             response_time_secs FLOAT,
+            response_size_bytes VARCHAR(32),
             fingerprint VARCHAR(64),
             parent_id INTEGER,
             parent_url TEXT,
