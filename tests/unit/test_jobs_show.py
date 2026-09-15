@@ -94,7 +94,6 @@ class TestLoadJobsList:
         settings = MagicMock(
             ingest_to_database=False,
             ingest_to_search=True,
-            search_index_prefix="ingest",
             db_jobs_table="jobs",
         )
         text = load_jobs_list(settings)

@@ -54,8 +54,8 @@ class TestFormatCrawlSummary:
         assert "| reason   | - " in text
         assert "| database | - " in text
         assert "| search   | - " in text
-        assert "job_items" in text
-        assert "job_requests" in text
+        assert "ingest_items" in text
+        assert "ingest_requests" in text
 
     def test_display_database_strips_credentials(self):
         assert (

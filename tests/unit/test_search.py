@@ -59,10 +59,7 @@ class TestIngestDestinations:
 
 class TestSearchWriter:
     def test_bulk_indexes_batch(self):
-        settings = _settings(
-            SEARCH_URL="http://localhost:9200",
-            SEARCH_INDEX_PREFIX="ingest",
-        )
+        settings = _settings(SEARCH_URL="http://localhost:9200")
         client = MagicMock()
         writer = SearchWriter(client, settings)
         writer._started_at = datetime.now(timezone.utc)
@@ -88,10 +85,7 @@ class TestSearchWriter:
         assert request_docs[0]["response_size_bytes"] == "347,337"
 
     def test_errors_count_skips_duplicate_scraper_log(self):
-        settings = _settings(
-            SEARCH_URL="http://localhost:9200",
-            SEARCH_INDEX_PREFIX="ingest",
-        )
+        settings = _settings(SEARCH_URL="http://localhost:9200")
         client = MagicMock()
         writer = SearchWriter(client, settings)
         writer._started_at = datetime.now(timezone.utc)
@@ -118,10 +112,7 @@ class TestSearchWriter:
         assert writer._counts["errors_count"] == 1
 
     def test_save_job_preserves_spider_name_on_flush(self):
-        settings = _settings(
-            SEARCH_URL="http://localhost:9200",
-            SEARCH_INDEX_PREFIX="ingest",
-        )
+        settings = _settings(SEARCH_URL="http://localhost:9200")
         client = MagicMock()
         writer = SearchWriter(client, settings)
         spider = MagicMock()
@@ -151,7 +142,7 @@ class TestSearchClient:
         ):
             client = SearchClient(settings)
             client.ping()
-            client.bulk("ingest-job_items", [{"job_id": "job-1", "item": {"a": 1}}])
+            client.bulk("ingest_items", [{"job_id": "job-1", "item": {"a": 1}}])
 
         mock_os.assert_called_once()
         kwargs = mock_os.call_args.kwargs
@@ -197,7 +188,7 @@ class TestSearchClient:
 
         with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
             client = SearchClient(settings)
-            assert client.get_document("ingest-jobs", "missing") is None
+            assert client.get_document("ingest_jobs", "missing") is None
 
     def test_search_documents_returns_sources(self):
         settings = _settings(SEARCH_URL="http://localhost:9200")
@@ -208,7 +199,7 @@ class TestSearchClient:
 
         with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
             client = SearchClient(settings)
-            docs = client.search_documents("ingest-jobs", size=5)
+            docs = client.search_documents("ingest_jobs", size=5)
         assert docs == [{"job_id": "j1", "status": "finished"}]
 
     def test_search_documents_applies_filters(self):
@@ -219,7 +210,7 @@ class TestSearchClient:
         filters = ({"term": {"status": "running"}}, {"term": {"spider_name": "Rs_Spider"}})
         with patch("scrapy_ingest.database.search.OpenSearch", return_value=mock_client):
             client = SearchClient(settings)
-            client.search_documents("ingest-jobs", size=5, filters=filters)
+            client.search_documents("ingest_jobs", size=5, filters=filters)
 
         body = mock_client.search.call_args.kwargs["body"]
         assert body["query"] == {"bool": {"filter": list(filters)}}
