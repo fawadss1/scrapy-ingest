@@ -113,6 +113,8 @@ class SearchWriter:
         }
         self._standalone_log_errors = 0
         self._started_at = None
+        self._spider_name = None
+        self._status = "running"
 
     def _index(self, table):
         return f"{self.settings.search_index_prefix}-{table}"
@@ -127,16 +129,9 @@ class SearchWriter:
         self._started_at = get_current_datetime(self.settings)
         self._counts = {key: 0 for key in self._counts}
         self._standalone_log_errors = 0
-        self.client.index(
-            self._index(self.settings.db_jobs_table),
-            job_key,
-            {
-                "job_id": job_key,
-                "spider_name": getattr(spider, "name", None),
-                "status": "running",
-                "started_at": self._iso(self._started_at),
-            },
-        )
+        self._spider_name = getattr(spider, "name", None)
+        self._status = "running"
+        self._save_job(job_key)
         return job_key
 
     def write(self, data, job_key):
@@ -206,6 +201,8 @@ class SearchWriter:
             job_key,
             {
                 "job_id": job_key,
+                "spider_name": self._spider_name,
+                "status": self._status,
                 "started_at": self._iso(self._started_at),
                 **self._counts,
                 "elapsed_seconds": elapsed,

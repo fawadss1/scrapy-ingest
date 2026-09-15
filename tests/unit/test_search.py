@@ -117,6 +117,22 @@ class TestSearchWriter:
         assert writer._counts["failed_requests"] == 1
         assert writer._counts["errors_count"] == 1
 
+    def test_save_job_preserves_spider_name_on_flush(self):
+        settings = _settings(
+            SEARCH_URL="http://localhost:9200",
+            SEARCH_INDEX_PREFIX="ingest",
+        )
+        client = MagicMock()
+        writer = SearchWriter(client, settings)
+        spider = MagicMock()
+        spider.name = "Rs_Spider"
+        writer.start_job("job-1", spider)
+        writer.write({"items": [{"title": "one"}]}, "job-1")
+
+        job_doc = client.index.call_args_list[-1][0][2]
+        assert job_doc["spider_name"] == "Rs_Spider"
+        assert job_doc["status"] == "running"
+
 
 class TestSearchClient:
     def test_connects_with_auth_and_bulk(self):
