@@ -70,7 +70,7 @@ def attach_runtime_hooks(crawler):
 def enable_ingest(crawler):
     """
     Idempotently enable request logging, error logging, parent_url tracking,
-    job logs, and stats. Called from DbInsertPipeline so projects only
+    job logs, and stats. Called from IngestPipeline so projects only
     need ITEM_PIPELINES.
     """
     if getattr(crawler, "_ingest_enabled", False):

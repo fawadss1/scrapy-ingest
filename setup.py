@@ -79,7 +79,7 @@ setup(
             "scrapy-ingest=scrapy_ingest.cli:main",
         ],
         "scrapy.pipelines": [
-            "db_ingest = scrapy_ingest.pipelines.main:DbInsertPipeline"
+            "ingest = scrapy_ingest.pipelines.main:IngestPipeline",
         ],
         "scrapy.extensions": [
             "logging_ext = scrapy_ingest.extensions.logging:LoggingExtension",

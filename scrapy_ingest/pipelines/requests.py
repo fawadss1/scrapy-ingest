@@ -12,7 +12,7 @@ class RequestsPipeline(BasePipeline):
     """
     Enable request logging (success + errors + parent_url) without items/logs.
 
-    Prefer DbInsertPipeline, which turns this on automatically.
+    Prefer IngestPipeline, which turns this on automatically.
     """
 
     def __init__(self, settings, crawler=None):

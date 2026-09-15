@@ -1,7 +1,7 @@
 """
 scrapy_ingest - A Scrapy extension for ingesting items, requests, logs, and stats into PostgreSQL.
 
-Enabling DbInsertPipeline auto-enables request logging (with parent_url),
+Enabling IngestPipeline auto-enables request logging (with parent_url),
 error logging, full job logs (including print()), and crawl stats.
 """
 
@@ -14,7 +14,7 @@ __version__ = _pkg_meta.version or "1.4.0"
 __author__ = _pkg_meta.author or "Fawad Ali"
 __description__ = "One pipeline. Full crawl observability in SQL or Elasticsearch."
 
-from .pipelines.main import DbInsertPipeline
+from .pipelines.main import IngestPipeline
 from .extensions.logging import LoggingExtension
 from .extensions.stats import StatsExtension
 from .pipelines.items import ItemsPipeline
@@ -33,7 +33,7 @@ from .exceptions import (
 )
 
 __all__ = [
-    "DbInsertPipeline",
+    "IngestPipeline",
     "LoggingExtension",
     "StatsExtension",
     "ItemsPipeline",

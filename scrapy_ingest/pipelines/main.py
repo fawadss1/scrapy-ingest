@@ -4,13 +4,14 @@ from ..bootstrap import enable_ingest
 from ..config.settings import Settings
 
 
-class DbInsertPipeline(ItemsPipeline):
+class IngestPipeline(ItemsPipeline):
     """
-    Collect items and flush unified batches to PostgreSQL.
+    Collect items and flush unified batches to configured destinations.
 
-    Enabling this pipeline also auto-enables request logging, error logging,
-    parent_url tracking, job logs, and stats — no EXTENSIONS or extra
-    DOWNLOADER_MIDDLEWARES required.
+    Writes to PostgreSQL/MySQL (``DB_URL``), Elasticsearch/OpenSearch
+    (``SEARCH_URL``), or both. Enabling this pipeline also auto-enables
+    request logging, error logging, parent_url tracking, job logs, and stats —
+    no EXTENSIONS or extra DOWNLOADER_MIDDLEWARES required.
     """
 
     @classmethod
