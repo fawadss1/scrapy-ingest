@@ -149,6 +149,7 @@ class TestSearchClient:
         assert kwargs["hosts"] == ["https://localhost:9200"]
         assert kwargs["http_auth"] == ("elastic", "secret")
         assert kwargs["use_ssl"] is True
+        assert kwargs["opaque_id"] == "Ingest"
         mock_bulk.assert_called_once()
 
     def test_ping_failure_raises_connection_error(self):

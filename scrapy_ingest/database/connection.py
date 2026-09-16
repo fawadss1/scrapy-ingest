@@ -4,6 +4,7 @@ import logging
 from typing import Optional, Any, Sequence
 from urllib.parse import quote, unquote, urlparse
 
+from ..constants import CLIENT_NAME
 from ..exceptions import DependencyError, IngestConnectionError
 
 
@@ -68,8 +69,9 @@ class DBConnection:
     def _connect_postgres(self, dsn=None, **kwargs):
         import psycopg2
 
+        kwargs.setdefault("application_name", CLIENT_NAME)
         if dsn:
-            return psycopg2.connect(dsn)
+            return psycopg2.connect(dsn, **kwargs)
         return psycopg2.connect(**kwargs)
 
     def _connect_mysql(self, dsn=None, **kwargs):

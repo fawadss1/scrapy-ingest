@@ -4,6 +4,9 @@ Changelog
 [Unreleased]
 ------------
 
+### Changed
+- PostgreSQL connections use ``application_name=Ingest`` by default (visible in ``pg_stat_activity``). Elasticsearch/OpenSearch requests send ``X-Opaque-Id: Ingest`` for cluster-side tracing. No settings required.
+
 [1.5.0] - 2026-09-15
 --------------------
 

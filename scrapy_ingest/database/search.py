@@ -8,6 +8,7 @@ from opensearchpy import OpenSearch
 from opensearchpy.exceptions import NotFoundError, OpenSearchWarning
 from opensearchpy.helpers import bulk as os_bulk
 
+from ..constants import CLIENT_NAME
 from ..exceptions import IngestConnectionError
 from ..utils.metrics import compute_errors_count, count_standalone_log_errors
 from ..utils.serialization import json_safe
@@ -33,6 +34,7 @@ class SearchClient:
             "verify_certs": settings.search_ssl_verify,
             "ssl_show_warn": settings.search_ssl_verify,
             "use_ssl": url.startswith("https://"),
+            "opaque_id": CLIENT_NAME,
         }
         if settings.search_user:
             kwargs["http_auth"] = (settings.search_user, settings.search_password or "")
